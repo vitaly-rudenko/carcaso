@@ -1,5 +1,5 @@
 {
-  "name": "@vitalyrudenko/carcaso2d",
+  "name": "@vitalyrudenko/carcaso-core",
   "version": "0.0.1",
   "description": "Carcaso 2D engine",
   "main": "index.js",
