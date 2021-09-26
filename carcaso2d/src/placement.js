@@ -7,6 +7,11 @@ export function getPlacementsForTile(pattern, map) {
     for (let rotation = 0; rotation < 4; rotation++) {
         for (const { x, y } of freePlacements) {
             if (isValidTilePlacement(map, { x, y, pattern, rotation })) {
+                // ignore tiles that don't change when rotated by certain angle
+                if (placements.some(p => p.x === x && p.y === y && getRotated({ pattern, rotation: p.rotation }) === getRotated({ pattern, rotation }))) {
+                    continue
+                }
+
                 placements.push({ x, y, rotation })
             }
         }

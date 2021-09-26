@@ -6,6 +6,13 @@ chai.use(deepEqualInAnyOrder)
 
 describe('[placement]', () => {
     describe('getPlacementsForTile()', () => {
+        it('should return empty array for no placements', () => {
+            const map = [{ x: 0, y: 0, pattern: 'crccr', rotation: 0 }]
+    
+            expect(getPlacementsForTile('ffmff', map))
+                .to.deep.eq([])
+        })
+
         it('should return possible placements for tiles on empty map', () => {
             const map = [{ x: 0, y: 0, pattern: 'crccr', rotation: 0 }]
     
@@ -20,7 +27,7 @@ describe('[placement]', () => {
                 ])
         })
 
-        it('should return possible placements for tiles on simple map', () => {
+        it('should return possible placements for tiles on simple map (1)', () => {
             const map = [
                 { x: 0,  y: 0, pattern: 'crrrf', rotation: 0 },
                 { x: 1,  y: 1, pattern: 'crccr', rotation: 0 },
@@ -41,6 +48,21 @@ describe('[placement]', () => {
                     { x: -1, y: -1, rotation: 0 },
                     { x: -2, y: 0, rotation: 1 },
                     { x: -2, y: 1, rotation: 1 },
+                ])
+        })
+
+        it('should return possible placements for tiles on simple map (2)', () => {
+            const map = [
+                { x: 0,  y: 0, pattern: 'crrrf', rotation: 0 },
+                { x: 1,  y: 1, pattern: 'frrfr', rotation: 0 },
+                { x: 1,  y: 0, pattern: 'frrfr', rotation: 1 },
+                { x: -1, y: 0, pattern: 'frrfr', rotation: 2 },
+                { x: -1, y: 1, pattern: 'frrfr', rotation: 3 },
+            ]
+
+            expect(getPlacementsForTile('crrrc', map))
+                .to.deep.equalInAnyOrder([
+                    { x: 0, y: 1, rotation: 0 },
                 ])
         })
     })
