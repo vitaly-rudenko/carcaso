@@ -1,0 +1,38 @@
+{
+  "name": "@vitalyrudenko/carcaso2d",
+  "version": "0.0.1",
+  "description": "Carcaso 2D engine",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha --recursive",
+    "test:watch": "npm run test -- --watch --parallel",
+    "test:watch:debug": "nodemon --exec 'npm run test'",
+    "prepublishOnly": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vitaly-rudenko/carcaso.git"
+  },
+  "keywords": [
+    "carcaso",
+    "game-engine",
+    "canvas",
+    "game",
+    "2d"
+  ],
+  "author": "Vitaly Rudenko",
+  "license": "GPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/vitaly-rudenko/carcaso/issues"
+  },
+  "homepage": "https://github.com/vitaly-rudenko/carcaso#readme",
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^9.1.2",
+    "nodemon": "^2.0.13"
+  },
+  "files": [
+    "src"
+  ]
+}
