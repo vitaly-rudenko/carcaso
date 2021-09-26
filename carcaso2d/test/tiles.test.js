@@ -69,8 +69,22 @@ describe('tiles', () => {
 
         const withRiver = count(tiles.filter(tile => tile.pattern.includes('w')))
         const withoutRiver = count(tiles.filter(tile => !tile.pattern.includes('w')))
+        const withCoatOfArms = count(tiles.filter(tile => tile.pattern.includes('a')))
+        const withMonasteries = count(tiles.filter(tile => tile.pattern.includes('m')))
 
         expect(withoutRiver).to.eq(72)
         expect(withRiver).to.eq(12)
+        expect(withCoatOfArms).to.eq(10)
+        expect(withMonasteries).to.eq(7)
+    })
+
+    it('should contain unique tiles', () => {
+        expect(
+            tiles.every(
+                (t1, i) => tiles.every(
+                    (t2, j) => i === j || t1.pattern !== t2.pattern
+                )
+            )
+        ).to.be.true
     })
 })
