@@ -1,12 +1,12 @@
 import { getRotated } from './rotation.js'
 
-export function getPlacements(pattern, map) {
-    const freePlacements = getFreePlacements(map)
+export function getPlacementsForTile(pattern, map) {
+    const freePlacements = getFreeMapPlacements(map)
     const placements = []
 
     for (let rotation = 0; rotation < 4; rotation++) {
         for (const { x, y } of freePlacements) {
-            if (isValidPlacement(map, { x, y, pattern, rotation })) {
+            if (isValidTilePlacement(map, { x, y, pattern, rotation })) {
                 placements.push({ x, y, rotation })
             }
         }
@@ -15,29 +15,39 @@ export function getPlacements(pattern, map) {
     return placements
 }
 
-export function getFreePlacements(map) {
-    return [
-        { x: -1, y: 0 },
-        { x: 1, y: 0 },
-        { x: 0, y: -1 },
-        { x: 0, y: 1 },
-    ]
+export function getFreeMapPlacements(map) {
+    const placements = []
+
+    for (const { x, y } of map) {
+        placements.push(
+            ...[
+                { x: x - 1, y: y + 0 },
+                { x: x + 1, y: y + 0 },
+                { x: x + 0, y: y - 1 },
+                { x: x + 0, y: y + 1 },
+            ]
+                .filter(({ x, y }) => placements.every(p => p.x !== x || p.y !== y))
+                .filter(({ x, y }) => !getTile(map, { x, y }))
+        )
+    }
+
+    return placements
 }
 
-export function isValidPlacement(map, { x, y, pattern, rotation }) {
+export function isValidTilePlacement(map, { x, y, pattern, rotation }) {
     const [top, left, _, right, bottom] = getRotated({ pattern, rotation })
     
     const topTile = getTile(map, { x, y: y + 1 })
-    if (topTile && topTile.pattern[4] !== top) return false
+    if (topTile && getRotated(topTile)[4] !== top) return false
     
     const leftTile = getTile(map, { x: x - 1, y })
-    if (leftTile && leftTile.pattern[3] !== left) return false
+    if (leftTile && getRotated(leftTile)[3] !== left) return false
 
     const rightTile = getTile(map, { x: x + 1, y })
-    if (rightTile && rightTile.pattern[1] !== right) return false
+    if (rightTile && getRotated(rightTile)[1] !== right) return false
 
     const bottomTile = getTile(map, { x, y: y - 1 })
-    if (bottomTile && bottomTile.pattern[0] !== bottom) return false
+    if (bottomTile && getRotated(bottomTile)[0] !== bottom) return false
 
     return true
 }
