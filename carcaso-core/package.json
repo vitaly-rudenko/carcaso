@@ -1,6 +1,6 @@
 {
   "name": "@vitalyrudenko/carcaso-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Carcaso game engine",
   "main": "index.js",
   "type": "module",
