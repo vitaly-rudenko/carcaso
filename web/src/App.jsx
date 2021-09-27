@@ -1,30 +1,60 @@
 import { getPlacementsForTile, getRotated, TileFeature } from '@vitalyrudenko/carcaso-core'
-import { Stage, Sprite, Container, useTick, Graphics, Text } from '@inlet/react-pixi'
-import React, { useEffect, useReducer, useRef } from 'react'
+import { Stage, Container, Graphics, Text } from '@inlet/react-pixi'
+import React, { useState } from 'react'
 import { TextStyle } from '@pixi/text'
 
 export function App() {
-    const map = [
+    const [map, setMap] = useState([
         { x: 0, y: 0, pattern: 'crrrf', rotation: 0 },
         { x: 1, y: 1, pattern: 'frrfr', rotation: 0 },
         { x: 1, y: 0, pattern: 'frrfr', rotation: 1 },
         { x: -1, y: 0, pattern: 'frrfr', rotation: 2 },
         { x: -1, y: 1, pattern: 'frrfr', rotation: 3 },
-    ]
+    ])
+
+    const [dragging, setDragging] = useState(false)
+    const [hasMoved, setHasMoved] = useState(false)
+    const [offset, setOffset] = useState({ x: 500, y: 500 })
 
     return (
-        <Stage width={1000} height={1000}>
-            <Map map={map} pattern={'crrrf'} x={200} y={200} />
+        <Stage width={1000} height={1000}
+            onPointerDown={() => {
+                setDragging(true)
+                setHasMoved(false)
+            }}
+            onPointerMove={(event) => {
+                if (!dragging) return
+
+                setHasMoved(true)
+                setOffset({
+                    x: offset.x + event.movementX,
+                    y: offset.y + event.movementY,
+                })
+            }}
+            onPointerUp={() => {
+                setDragging(false)
+                setHasMoved(false)
+            }} >
+            <Map
+                map={map}
+                pattern={'crrrf'}
+                onSelectPlacement={(placement) => setMap([...map, { pattern: 'crrrf', ...placement }])}
+                x={offset.x}
+                y={offset.y}
+                anchor={0.5}
+                disabled={hasMoved}
+            />
         </Stage>
     )
 }
 
-function Map({ map, pattern, ...props }) {
-    const possiblePlacements = getPlacementsForTile(pattern, map)
+function Map({ map, pattern = null, disabled = false, onSelectPlacement, ...props }) {
+    const possiblePlacements = pattern ? getPlacementsForTile(pattern, map) : []
     
     return <Container {...props}>
         {map.map(tile => (
             <Tile
+                key={getTileKey(tile)}
                 pattern={tile.pattern}
                 rotation={tile.rotation}
                 x={tile.x}
@@ -33,18 +63,24 @@ function Map({ map, pattern, ...props }) {
         ))}
         {possiblePlacements.map((placement, i) => (
             <Tile
+                key={getTileKey({ pattern, ...placement })}
                 label={String(i + 1)}
                 preview={true}
                 pattern={pattern}
                 rotation={placement.rotation}
                 x={placement.x}
                 y={placement.y}
+                pointerup={() => !disabled && onSelectPlacement(placement)}
             />
         ))}
     </Container>
 }
 
-function Tile({ pattern, rotation, x, y, preview = false, label = null }) {
+function getTileKey({ pattern, x, y, rotation }) {
+    return `${x}-${y}-${pattern}-${rotation}`
+}
+
+function Tile({ pattern, rotation, x, y, preview = false, label = null, ...props }) {
     const rotatedPattern = getRotated({ pattern, rotation })
 
     const tileWidth = 96
@@ -53,12 +89,12 @@ function Tile({ pattern, rotation, x, y, preview = false, label = null }) {
     const featureWidth = tileWidth / 3
     const featureHeight = tileHeight / 3
 
-    return <Container sortableChildren>
+    return <Container sortableChildren interactive buttonMode {...props}>
         {label && preview && <Text
             zIndex={2}
             text={label}
             style={new TextStyle({
-                fontSize: 64,
+                fontSize: 48,
                 fill: 0xFFFFFF,
                 dropShadow: true,
             })}
