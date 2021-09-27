@@ -72,10 +72,10 @@ describe('tiles', () => {
         const withCoatOfArms = count(tiles.filter(tile => tile.pattern.includes('a')))
         const withMonasteries = count(tiles.filter(tile => tile.pattern.includes('m')))
 
-        expect(withoutRiver).to.eq(72)
-        expect(withRiver).to.eq(12)
-        expect(withCoatOfArms).to.eq(10)
-        expect(withMonasteries).to.eq(7)
+        expect(withoutRiver, 'without river').to.eq(72)
+        expect(withRiver, 'with river').to.eq(12)
+        expect(withCoatOfArms, 'with coat of arms').to.eq(10)
+        expect(withMonasteries, 'with monasteries').to.eq(7)
     })
 
     it('should contain unique tiles', () => {

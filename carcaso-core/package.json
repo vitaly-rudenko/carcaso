@@ -1,7 +1,7 @@
 {
   "name": "@vitalyrudenko/carcaso-core",
   "version": "0.0.1",
-  "description": "Carcaso 2D engine",
+  "description": "Carcaso game engine",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -17,9 +17,7 @@
   "keywords": [
     "carcaso",
     "game-engine",
-    "canvas",
-    "game",
-    "2d"
+    "game"
   ],
   "author": "Vitaly Rudenko",
   "license": "GPL-3.0-only",
