@@ -1,31 +1,4 @@
-export const TileFeature = {
-    FIELD: 'f',
-    ROAD: 'r',
-    CITY: 'c',
-    RIVER: 'w',
-    MONASTERY: 'm',
-    COAT_OF_ARMS: 'a',
-}
-
 // cities x roads
-
-export function parseTile(serialized) {
-    const rows = serialized
-        .split('\n')
-        .map(row => row.trim())
-        .filter(Boolean)
-    const top = rows[0][1]
-    const [middle, metadata] = rows[1].split(' ')
-    const bottom = rows[2][1]
-
-    const count = Number(metadata.slice(1))
-
-    return {
-        pattern: top + middle + bottom,
-        count,
-    }
-}
-
 export const tiles = [
     // --- non-river tiles
     // 0x0
@@ -180,3 +153,20 @@ export const tiles = [
     wrr x1
     _w_`,
 ].map(serialized => parseTile(serialized))
+
+export function parseTile(serialized) {
+    const rows = serialized
+        .split('\n')
+        .map(row => row.trim())
+        .filter(Boolean)
+    const top = rows[0][1]
+    const [middle, metadata] = rows[1].split(' ')
+    const bottom = rows[2][1]
+
+    const count = Number(metadata.slice(1))
+
+    return {
+        pattern: top + middle + bottom,
+        count,
+    }
+}
