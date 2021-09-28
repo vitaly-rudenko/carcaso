@@ -2,16 +2,33 @@ import { expect } from 'chai'
 import { rotatePattern } from '../src/rotatePattern.js'
 
 describe('rotatePattern()', () => {
-    it('should return rotated tiles', () => {
-        expect(rotatePattern('tlcrb', 0)).to.deep.eq('tlcrb')
-        expect(rotatePattern('tlcrb', 1)).to.deep.eq('lbctr')
-        expect(rotatePattern('tlcrb', 2)).to.deep.eq('brclt')
-        expect(rotatePattern('tlcrb', 3)).to.deep.eq('rtcbl')
+    const pattern = 'tlcrb'
+    
+    it('should rotate patterns', () => {
+        expect(rotatePattern(pattern, 0)).to.eq(pattern)
+        expect(rotatePattern(pattern, 1)).to.eq('lbctr')
+        expect(rotatePattern(pattern, 2)).to.eq('brclt')
+        expect(rotatePattern(pattern, 3)).to.eq('rtcbl')
+        expect(rotatePattern(pattern, 4)).to.eq(pattern)
+        expect(rotatePattern(pattern, 5)).to.eq(rotatePattern(pattern, 1))
+        expect(rotatePattern(pattern, 6)).to.eq(rotatePattern(pattern, 2))
+        expect(rotatePattern(pattern, 7)).to.eq(rotatePattern(pattern, 3))
+    })
+
+    it('should support negative rotation values', () => {
+        expect(rotatePattern(rotatePattern(pattern, 1), -1)).to.eq(pattern)
+        expect(rotatePattern(rotatePattern(pattern, 2), -2)).to.eq(pattern)
+        expect(rotatePattern(rotatePattern(pattern, 3), -3)).to.eq(pattern)
+        expect(rotatePattern(rotatePattern(pattern, 4), -4)).to.eq(pattern)
+        expect(rotatePattern(rotatePattern(pattern, 5), -5)).to.eq(pattern)
+        expect(rotatePattern(rotatePattern(pattern, 6), -6)).to.eq(pattern)
+        expect(rotatePattern(rotatePattern(pattern, 7), -7)).to.eq(pattern)
     })
 
     it('should throw an error for invalid rotations', () => {
-        expect(() => rotatePattern('tlcrb', -1)).to.throw('Invalid rotation: -1')
-        expect(() => rotatePattern('tlcrb', 4)).to.throw('Invalid rotation: 4')
-        expect(() => rotatePattern('tlcrb', 'abc')).to.throw('Invalid rotation: abc')
+        expect(() => rotatePattern(pattern, -0.5)).to.throw('Invalid rotation: -0.5')
+        expect(() => rotatePattern(pattern, 1.5)).to.throw('Invalid rotation: 1.5')
+        expect(() => rotatePattern(pattern, Infinity)).to.throw('Invalid rotation: Infinity')
+        expect(() => rotatePattern(pattern, 'abc')).to.throw('Invalid rotation: abc')
     })
 })
