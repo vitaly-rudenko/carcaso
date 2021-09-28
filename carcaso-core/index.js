@@ -1,3 +1,4 @@
-export * from './src/placement.js'
-export * from './src/rotation.js'
-export * from './src/tiles.js'
+export { Feature } from './src/Feature.js'
+export { findTilePlacements } from './src/findTilePlacements.js'
+export { rotatePattern } from './src/rotatePattern.js'
+export { tiles } from './src/tiles.js'

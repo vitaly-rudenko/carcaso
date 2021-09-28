@@ -3,17 +3,21 @@ import { Stage } from '@inlet/react-pixi'
 import { Map } from './Map.jsx'
 
 export function GamePage() {
+    const tileToPlace = { pattern: 'ffrrr' }
+    // const tileToPlace = null
+
     const [map, setMap] = useState([
-        { x: 0, y: 0, pattern: 'crrrf', rotation: 0 },
-        { x: 1, y: 1, pattern: 'frrfr', rotation: 0 },
-        { x: 1, y: 0, pattern: 'frrfr', rotation: 1 },
-        { x: -1, y: 0, pattern: 'frrfr', rotation: 2 },
-        { x: -1, y: 1, pattern: 'frrfr', rotation: 3 },
+        { tile: { pattern: 'crrrf' }, placement: { rotation: 0, position: { x: 0,  y: 0 } } },
+        { tile: { pattern: 'frrfr' }, placement: { rotation: 0, position: { x: 1,  y: 1 } } },
+        { tile: { pattern: 'frrfr' }, placement: { rotation: 1, position: { x: 1,  y: 0 } } },
+        { tile: { pattern: 'frrfr' }, placement: { rotation: 2, position: { x: -1, y: 0 } } },
+        { tile: { pattern: 'frrfr' }, placement: { rotation: 3, position: { x: -1, y: 1 } } },
     ])
 
     const [dragging, setDragging] = useState(false)
     const [hasMoved, setHasMoved] = useState(false)
     const [position, setPosition] = useState({ x: 500, y: 500 })
+    const [lastSelectedTile, setLastSelectedTile] = useState(null)
 
     return (
         <div id="game-page" className="page">
@@ -38,8 +42,19 @@ export function GamePage() {
                 }} >
                 <Map
                     map={map}
-                    pattern={'rrrfr'}
-                    onSelectPlacement={(placement) => setMap([...map, { pattern: 'rrrfr', ...placement }])}
+                    tileToPlace={tileToPlace}
+                    selectedTileForMeeple={lastSelectedTile}
+                    onSelectPlacement={(placement) => {
+                        const tile = { tile: tileToPlace, placement }
+                        setMap([...map, tile])
+                        setLastSelectedTile(tile)
+                    }}
+                    onSelectPlacementForMeeple={(placement) => {
+                        setMap([
+                            ...map.filter(tile => !areTilesEqual(tile, lastSelectedTile)),
+                            { ...lastSelectedTile, meeple: { owner: 'red', placement } }
+                        ])
+                    }}
                     x={position.x}
                     y={position.y}
                     anchor={0.5}
@@ -48,4 +63,8 @@ export function GamePage() {
             </Stage>
         </div>
     )
+}
+
+function areTilesEqual(tile1, tile2) {
+    return tile1.x === tile2.x && tile1.y === tile2.y && tile1.rotation === tile2.rotation && tile1.pattern === tile2.pattern
 }

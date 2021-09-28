@@ -1,10 +1,12 @@
-import { getRotated, TileFeature } from '@vitalyrudenko/carcaso-core'
+import { rotatePattern, Feature } from '@vitalyrudenko/carcaso-core'
 import { Container, Graphics, Text } from '@inlet/react-pixi'
 import { TextStyle } from 'pixi.js'
 import React from 'react'
 
-export function Tile({ pattern, rotation, x, y, preview = false, label = null, corner = -1, ...props }) {
-    const rotatedPattern = getRotated({ pattern, rotation })
+export function PlacedTile({ placedTile, preview = false, label = null, corner = -1, ...props }) {
+    const { x, y } = placedTile.placement.position
+
+    const rotatedPattern = rotatePattern(placedTile.tile.pattern, placedTile.placement.rotation)
 
     const innerOffsetX = preview ? 4 : 0
     const innerOffsetY = preview ? 4 : 0
@@ -23,7 +25,7 @@ export function Tile({ pattern, rotation, x, y, preview = false, label = null, c
     const offsetX = ((corner === 1 || corner === 3) ? tileWidth + innerOffsetX : 0) + innerOffsetX
     const offsetY = ((corner === 2 || corner === 3) ? tileHeight + innerOffsetY : 0) + innerOffsetY
 
-    return <Container sortableChildren interactive buttonMode {...props}>
+    return <Container sortableChildren interactive={preview} buttonMode={preview} {...props}>
         {label && preview && <Text
             zIndex={2}
             text={label}
@@ -38,6 +40,10 @@ export function Tile({ pattern, rotation, x, y, preview = false, label = null, c
             x={x * mapTileWidth + tileWidth / 2 + offsetX}
             y={-y * mapTileHeight + tileHeight / 2 + offsetY}
         />}
+        {/* {meeple && <Graphics
+            zIndex={2}
+            x={}
+        />} */}
         <Graphics
             zIndex={1}
             x={x * mapTileWidth + offsetX}
@@ -45,9 +51,6 @@ export function Tile({ pattern, rotation, x, y, preview = false, label = null, c
             alpha={preview ? 0.75 : 1}
             draw={g => {
                 g.clear()
-
-                g.beginFill(0x00FF00)
-                g.drawRect(0, 0, tileWidth, tileHeight)
 
                 // top
                 const top = rotatedPattern[0]
@@ -93,12 +96,12 @@ export function Tile({ pattern, rotation, x, y, preview = false, label = null, c
 
 function getFeatureColor(feature) {
     switch (feature) {
-        case TileFeature.CITY: return 0xFF6666
-        case TileFeature.COAT_OF_ARMS: return 0x0000FF
-        case TileFeature.FIELD: return 0x00FF00
-        case TileFeature.MONASTERY: return 0xBB0000
-        case TileFeature.RIVER: return 0x6666FF
-        case TileFeature.ROAD: return 0x666666
+        case Feature.CITY: return 0xFF6666
+        case Feature.COAT_OF_ARMS: return 0x0000FF
+        case Feature.FIELD: return 0x00FF00
+        case Feature.MONASTERY: return 0xBB0000
+        case Feature.RIVER: return 0x6666FF
+        case Feature.ROAD: return 0x666666
         default: throw new Error(`Invalid feature: ${feature}`)
     }
 }

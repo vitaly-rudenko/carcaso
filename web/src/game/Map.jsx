@@ -1,21 +1,21 @@
 import React from 'react'
 import { Container } from '@inlet/react-pixi'
-import { getPlacementsForTile } from '@vitalyrudenko/carcaso-core'
-import { Tile } from './Tile.jsx'
+import { findTilePlacements } from '@vitalyrudenko/carcaso-core'
+import { PlacedTile } from './PlacedTile.jsx'
 
 const CORNERS = [
     [-1],
-    [0, 3],
+    [0, 1],
     [0, 1, 2],
     [0, 1, 2, 3]
 ]
 
-export function Map({ map, pattern = null, disabled = false, onSelectPlacement, ...props }) {
-    const possiblePlacements = pattern ? getPlacementsForTile(pattern, map) : []
+export function Map({ map, tileToPlace = null, disabled = false, onSelectPlacement, ...props }) {
+    const possiblePlacements = tileToPlace ? findTilePlacements(tileToPlace, map) : []
 
     const groupedPlacements = {}
     for (const placement of possiblePlacements) {
-        const id = placement.x + '-' + placement.y
+        const id = placement.position.x + '-' + placement.position.y
 
         if (!groupedPlacements[id]) {
             groupedPlacements[id] = [placement]
@@ -26,34 +26,30 @@ export function Map({ map, pattern = null, disabled = false, onSelectPlacement, 
     
     const corneredPossiblePlacements = []
     for (const placements of Object.values(groupedPlacements)) {
-        const corners = CORNERS[placements.length - 1]
+        const corners = CORNERS[placements.filter(Boolean).length - 1]
         corneredPossiblePlacements.push(...placements.map((placement, i) => [corners[i], placement]))
     }
 
     return <Container {...props}>
-        {map.map(tile => (
-            <Tile
-                key={getTileKey(tile)}
-                pattern={tile.pattern}
-                rotation={tile.rotation}
-                x={tile.x}
-                y={tile.y}
+        {map.map(placedTile => (
+            <PlacedTile
+                key={getPlacedTileKey(placedTile)}
+                placedTile={placedTile}
             />
         ))}
-        {corneredPossiblePlacements.map(([corner, placement], i) => (
-            <Tile preview corner={corner}
-                key={getTileKey({ pattern, ...placement })}
+        {corneredPossiblePlacements.map(([corner, placement], i) => {
+            const placedTile = { tile: tileToPlace, placement }
+
+            return <PlacedTile preview corner={corner}
+                key={getPlacedTileKey(placedTile)}
                 label={String(i + 1)}
-                pattern={pattern}
-                rotation={placement.rotation}
-                x={placement.x}
-                y={placement.y}
+                placedTile={placedTile}
                 pointerup={() => !disabled && onSelectPlacement(placement)}
             />
-        ))}
+        })}
     </Container>
 }
 
-function getTileKey({ pattern, x, y, rotation }) {
+function getPlacedTileKey({ tile: { pattern }, placement: { position: { x, y }, rotation } }) {
     return `${x}-${y}-${pattern}-${rotation}`
 }
