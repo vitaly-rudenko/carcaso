@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Container } from '@inlet/react-pixi'
 import { findTilePlacements } from '@vitalyrudenko/carcaso-core'
 import { PlacedTile } from './PlacedTile.jsx'
@@ -10,31 +10,36 @@ const CORNERS = [
     [0, 1, 2, 3]
 ]
 
-export function Map({ map, tileToPlace = null, disabled = false, onSelectPlacement, ...props }) {
-    const possiblePlacements = tileToPlace ? findTilePlacements(tileToPlace, map) : []
+export const Map = React.memo(({ map, zoom, tileToPlace = null, disabled = false, onSelectPlacement }) => {
+    const possiblePlacements = useMemo(() => tileToPlace ? findTilePlacements(tileToPlace, map) : [], [map, tileToPlace])
 
-    const groupedPlacements = {}
-    for (const placement of possiblePlacements) {
-        const id = placement.position.x + '-' + placement.position.y
-
-        if (!groupedPlacements[id]) {
-            groupedPlacements[id] = [placement]
-        } else {
-            groupedPlacements[id].push(placement)
-        }
-    }
+    const corneredPossiblePlacements = useMemo(() => {
+        const groupedPlacements = {}
+        for (const placement of possiblePlacements) {
+            const id = placement.position.x + '-' + placement.position.y
     
-    const corneredPossiblePlacements = []
-    for (const placements of Object.values(groupedPlacements)) {
-        const corners = CORNERS[placements.filter(Boolean).length - 1]
-        corneredPossiblePlacements.push(...placements.map((placement, i) => [corners[i], placement]))
-    }
+            if (!groupedPlacements[id]) {
+                groupedPlacements[id] = [placement]
+            } else {
+                groupedPlacements[id].push(placement)
+            }
+        }
+        
+        const corneredPossiblePlacements = []
+        for (const placements of Object.values(groupedPlacements)) {
+            const corners = CORNERS[placements.filter(Boolean).length - 1]
+            corneredPossiblePlacements.push(...placements.map((placement, i) => [corners[i], placement]))
+        }
 
-    return <Container {...props}>
+        return corneredPossiblePlacements
+    }, [possiblePlacements])
+
+    return <Container>
         {map.map(placedTile => (
             <PlacedTile
                 key={getPlacedTileKey(placedTile)}
                 placedTile={placedTile}
+                zoom={zoom}
             />
         ))}
         {corneredPossiblePlacements.map(([corner, placement], i) => {
@@ -44,11 +49,12 @@ export function Map({ map, tileToPlace = null, disabled = false, onSelectPlaceme
                 key={getPlacedTileKey(placedTile)}
                 label={String(i + 1)}
                 placedTile={placedTile}
+                zoom={zoom}
                 pointerup={() => !disabled && onSelectPlacement(placement)}
             />
         })}
     </Container>
-}
+}, (prev, next) => JSON.stringify(prev) === JSON.stringify(next))
 
 function getPlacedTileKey({ tile: { pattern }, placement: { position: { x, y }, rotation } }) {
     return `${x}-${y}-${pattern}-${rotation}`

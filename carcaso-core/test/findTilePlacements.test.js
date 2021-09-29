@@ -69,6 +69,17 @@ describe('findTilePlacements()', () => {
             ])
     })
 
+    it.skip('should only return continuous placements for river tiles', () => {
+        const map = [
+            { tile: { pattern: 'ffwfw' }, placement: { rotation: 0, position: { x: 0, y: 0 } } }
+        ]
+
+        expect(findTilePlacements({ pattern: 'wfwfw' }, map))
+            .to.deep.equalInAnyOrder([
+                { position: { x: 0, y: -1 }, rotation: 0 },
+            ])
+    })
+
     describe('getFreeMapPositions()', () => {
         it('should return free placements on empty map', () => {
             const map = [
