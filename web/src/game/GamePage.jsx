@@ -141,7 +141,7 @@ export function GamePage() {
     return (
         <div id="game-page" className="page">
             <Stage width={width} height={height}
-                options={{ backgroundColor: 0x7f8778, antialias: true, resolution: 2 }}
+                options={{ backgroundColor: 0x7f8778, antialias: true }}
                 onPointerDown={(event) => {
                     dragging.current = true
                     hasMoved.current = false

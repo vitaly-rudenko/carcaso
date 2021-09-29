@@ -10,8 +10,8 @@ export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false,
 
     const rotatedPattern = rotatePattern(placedTile.tile.pattern, placedTile.placement.rotation)
 
-    const innerOffsetX = preview ? 4 : 0
-    const innerOffsetY = preview ? 4 : 0
+    const innerOffsetX = (preview ? 2 : 0) * scale
+    const innerOffsetY = (preview ? 2 : 0) * scale
 
     const mapTileWidth = 48 * scale
     const mapTileHeight = 48 * scale
@@ -24,14 +24,15 @@ export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false,
     const featureWidth = tileWidth / 5
     const featureHeight = tileHeight / 5
 
-    const offsetX = ((corner === 1 || corner === 3) ? tileWidth + innerOffsetX : 0) + innerOffsetX
-    const offsetY = ((corner === 2 || corner === 3) ? tileHeight + innerOffsetY : 0) + innerOffsetY
+    const offsetX = ((corner === 1 || corner === 2) ? tileWidth + innerOffsetX : 0) + innerOffsetX
+    const offsetY = ((corner === 1 || corner === 3) ? tileHeight + innerOffsetY : 0) + innerOffsetY
 
     return <Container sortableChildren interactive={preview} buttonMode={preview} pointerup={onClick}>
         <Graphics
             zIndex={1}
             x={x * mapTileWidth + offsetX}
             y={-y * mapTileHeight + offsetY}
+            alpha={preview ? scale : 1}
             draw={g => {
                 g.clear()
 
@@ -69,7 +70,7 @@ export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false,
                 }
 
                 if (preview) {
-                    g.beginFill(0x000000, 0.25)
+                    g.beginFill(0x000000, scale * 0.25)
                     g.drawRect(-1, -1, tileWidth + 2, tileHeight + 2)
                     g.endFill()
 
@@ -77,7 +78,7 @@ export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false,
                     g.drawRect(0, 0, tileWidth, tileHeight)
                     g.endHole()
                 } else {
-                    g.beginFill(0x000000, 0.1)
+                    g.beginFill(0x000000, scale * 0.1)
                     g.drawRect(0, 0, tileWidth, tileHeight)
                     g.endFill()
 
@@ -107,9 +108,7 @@ const ConnectorType = {
 
 const visualFeaturePriorities = [VisualFeature.CITY, VisualFeature.COAT_OF_ARMS, VisualFeature.ROAD, VisualFeature.RIVER]
 
-/**
- * @param {import('pixi.js').Graphics} g
- */
+/** @param {import('pixi.js').Graphics} g */
 function drawConnector(p, x, y, g, rx, ry, width, height) {
     let type = ConnectorType.FULL
 
