@@ -5,6 +5,29 @@ import { getFreeMapPositions, findTilePlacements } from '../src/findTilePlacemen
 chai.use(deepEqualInAnyOrder)
 
 describe('findTilePlacements()', () => {
+    it('should return all possible placements for empty map (non-river tile)', () => {
+        expect(findTilePlacements({ pattern: 'ffmff' }, []))
+        .to.deep.eq([
+            { position: { x: 0, y: 0 }, rotation: 0 },
+        ])
+
+        expect(findTilePlacements({ pattern: 'ffmfr' }, []))
+            .to.deep.eq([
+                { position: { x: 0, y: 0 }, rotation: 0 },
+                { position: { x: 0, y: 0 }, rotation: 1 },
+                { position: { x: 0, y: 0 }, rotation: 2 },
+                { position: { x: 0, y: 0 }, rotation: 3 },
+            ])
+    })
+
+    it('should return all possible placements for empty map (river tile)', () => {
+        expect(findTilePlacements({ pattern: 'ffwfw' }, []))
+            .to.deep.eq([
+                { position: { x: 0, y: 0 }, rotation: 0 },
+                { position: { x: 0, y: 0 }, rotation: 1 },
+            ])
+    })
+
     it('should return empty array for no placements', () => {
         const map = [
             { tile: { pattern: 'crccr' }, placement: { rotation: 0, position: { x: 0, y: 0 } } }

@@ -1,13 +1,13 @@
 {
   "name": "@vitalyrudenko/carcaso-core",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Carcaso game engine",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "mocha --recursive",
     "test:watch": "npm run test -- --watch --parallel",
-    "test:watch:debug": "nodemon --exec 'npm run test'",
+    "test:watch:debug": "nodemon --exec 'npm run test || exit 1'",
     "prepublishOnly": "npm test"
   },
   "repository": {

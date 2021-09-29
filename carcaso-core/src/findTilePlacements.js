@@ -21,6 +21,10 @@ export function findTilePlacements(tile, map) {
 }
 
 export function getFreeMapPositions(map) {
+    if (map.length === 0) {
+        return [{ x: 0, y: 0 }]
+    }
+
     const positions = []
 
     for (const placedTile of map) {
@@ -57,18 +61,23 @@ function canTileBePlaced(map, tile, placement) {
     const leftTileRight = leftPlacedTile && rotatePattern(leftPlacedTile.tile.pattern, leftPlacedTile.placement.rotation)[3]
     const rightTileLeft = rightPlacedTile && rotatePattern(rightPlacedTile.tile.pattern, rightPlacedTile.placement.rotation)[1]
 
+    if (topPlacedTile && topTileBottom !== top) return false
+    if (leftPlacedTile && leftTileRight !== left) return false
+    if (rightPlacedTile && rightTileLeft !== right) return false
+    if (bottomPlacedTile && bottomTileTop !== bottom) return false
+
     if (pattern.includes(Feature.RIVER)) {
+        if (!topPlacedTile && !rightPlacedTile) {
+            if (top === Feature.RIVER || right === Feature.RIVER) return false
+            return left === Feature.RIVER || bottom === Feature.RIVER
+        }
+
         if (top === Feature.RIVER) return right !== Feature.RIVER && topTileBottom === Feature.RIVER
         if (right === Feature.RIVER) return rightTileLeft === Feature.RIVER
         
         return false
     }
     
-    if (topPlacedTile && topTileBottom !== top) return false
-    if (leftPlacedTile && leftTileRight !== left) return false
-    if (rightPlacedTile && rightTileLeft !== right) return false
-    if (bottomPlacedTile && bottomTileTop !== bottom) return false
-
     return true
 }
 
