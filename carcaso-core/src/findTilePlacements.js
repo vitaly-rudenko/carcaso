@@ -1,3 +1,4 @@
+import { Feature } from './Feature.js'
 import { rotatePattern } from './rotatePattern.js'
 
 export function findTilePlacements(tile, map) {
@@ -46,18 +47,27 @@ function canTileBePlaced(map, tile, placement) {
     const { x, y } = position
 
     const [top, left, _, right, bottom] = rotatePattern(pattern, rotation)
-    
-    const topTile = getPlacedTile(map, { x, y: y + 1 })
-    if (topTile && rotatePattern(topTile.tile.pattern, topTile.placement.rotation)[4] !== top) return false
-    
-    const leftTile = getPlacedTile(map, { x: x - 1, y })
-    if (leftTile && rotatePattern(leftTile.tile.pattern, leftTile.placement.rotation)[3] !== left) return false
+    const topPlacedTile = getPlacedTile(map, { x, y: y + 1 })
+    const leftPlacedTile = getPlacedTile(map, { x: x - 1, y })
+    const rightPlacedTile = getPlacedTile(map, { x: x + 1, y })
+    const bottomPlacedTile = getPlacedTile(map, { x, y: y - 1 })
 
-    const rightTile = getPlacedTile(map, { x: x + 1, y })
-    if (rightTile && rotatePattern(rightTile.tile.pattern, rightTile.placement.rotation)[1] !== right) return false
+    const topTileBottom = topPlacedTile && rotatePattern(topPlacedTile.tile.pattern, topPlacedTile.placement.rotation)[4]
+    const bottomTileTop = bottomPlacedTile && rotatePattern(bottomPlacedTile.tile.pattern, bottomPlacedTile.placement.rotation)[0]
+    const leftTileRight = leftPlacedTile && rotatePattern(leftPlacedTile.tile.pattern, leftPlacedTile.placement.rotation)[3]
+    const rightTileLeft = rightPlacedTile && rotatePattern(rightPlacedTile.tile.pattern, rightPlacedTile.placement.rotation)[1]
 
-    const bottomTile = getPlacedTile(map, { x, y: y - 1 })
-    if (bottomTile && rotatePattern(bottomTile.tile.pattern, bottomTile.placement.rotation)[0] !== bottom) return false
+    if (pattern.includes(Feature.RIVER)) {
+        if (right === Feature.RIVER) return rightTileLeft === Feature.RIVER
+        if (top === Feature.RIVER && topTileBottom === Feature.RIVER) return true
+        
+        return false
+    }
+    
+    if (topPlacedTile && topTileBottom !== top) return false
+    if (leftPlacedTile && leftTileRight !== left) return false
+    if (rightPlacedTile && rightTileLeft !== right) return false
+    if (bottomPlacedTile && bottomTileTop !== bottom) return false
 
     return true
 }
