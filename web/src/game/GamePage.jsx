@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { tiles, findTilePlacements } from '@vitalyrudenko/carcaso-core'
 import { Container, Stage } from '@inlet/react-pixi'
 import { Map } from './Map.jsx'
@@ -97,10 +97,9 @@ const ZOOMS =[
 export function GamePage() {
     const [map, setMap] = useState(initialMap)
 
-    const [dragging, setDragging] = useState(false)
-    const [hasMoved, setHasMoved] = useState(false)
+    const dragging = useRef(false)
+    const hasMoved = useRef(false)
     const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
-    const [lastSelectedTile, setLastSelectedTile] = useState(null)
     const [zoom, setZoom] = useState(100)
     const [[width, height], setWidthHeight] = useState([window.innerWidth, window.innerHeight])
     const lastClientPosition = useRef({ x: 0, y: 0 })
@@ -132,21 +131,28 @@ export function GamePage() {
         return () => window.removeEventListener('resize', listener)
     }, [])
 
+    const handleSelectPlacement = useCallback((placement) => {
+        if (hasMoved.current) return
+
+        const placedTile = { tile: tileToPlace, placement }
+        setMap([...map, placedTile])
+    }, [hasMoved, map])
+
     return (
         <div id="game-page" className="page">
             <Stage width={width} height={height}
                 options={{ backgroundColor: 0x7f8778, antialias: true, resolution: 2 }}
                 onPointerDown={(event) => {
-                    setDragging(true)
-                    setHasMoved(false)
+                    dragging.current = true
+                    hasMoved.current = false
 
                     lastClientPosition.current.x = event.clientX
                     lastClientPosition.current.y = event.clientY
                 }}
                 onPointerMove={(event) => {
-                    if (!dragging) return
+                    if (!dragging.current) return
 
-                    setHasMoved(true)
+                    hasMoved.current = true
                     setPosition({
                         x: Math.trunc(position.x + event.clientX - lastClientPosition.current.x),
                         y: Math.trunc(position.y + event.clientY - lastClientPosition.current.y),
@@ -156,34 +162,18 @@ export function GamePage() {
                     lastClientPosition.current.y = event.clientY
                 }}
                 onPointerUp={() => {
-                    setDragging(false)
-                    setHasMoved(false)
+                    dragging.current = false
+                    hasMoved.current = false
                 }} >
                 <Container x={position.x} y={position.y} anchor={0.5}>
                     <Map
                         map={map}
                         zoom={zoom}
                         tileToPlace={tileToPlace}
-                        selectedTileForMeeple={lastSelectedTile}
-                        onSelectPlacement={(placement) => {
-                            const placedTile = { tile: tileToPlace, placement }
-                            setMap([...map, placedTile])
-                            setLastSelectedTile(placedTile)
-                        }}
-                        onSelectPlacementForMeeple={(placement) => {
-                            setMap([
-                                ...map.filter(tile => !areTilesEqual(tile, lastSelectedTile)),
-                                { ...lastSelectedTile, meeple: { owner: 'red', placement } }
-                            ])
-                        }}
-                        disabled={hasMoved}
+                        onSelectPlacement={handleSelectPlacement}
                     />
                 </Container>
             </Stage>
         </div>
     )
-}
-
-function areTilesEqual(tile1, tile2) {
-    return tile1.x === tile2.x && tile1.y === tile2.y && tile1.rotation === tile2.rotation && tile1.pattern === tile2.pattern
 }

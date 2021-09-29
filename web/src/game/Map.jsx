@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import deepEqual from 'fast-deep-equal/react'
 import { Container } from '@inlet/react-pixi'
 import { findTilePlacements } from '@vitalyrudenko/carcaso-core'
 import { PlacedTile } from './PlacedTile.jsx'
@@ -10,7 +11,7 @@ const CORNERS = [
     [0, 1, 2, 3]
 ]
 
-export const Map = React.memo(({ map, zoom, tileToPlace = null, disabled = false, onSelectPlacement }) => {
+export const Map = React.memo(({ map, zoom, tileToPlace = null, onSelectPlacement }) => {
     const possiblePlacements = useMemo(() => tileToPlace ? findTilePlacements(tileToPlace, map) : [], [map, tileToPlace])
 
     const corneredPossiblePlacements = useMemo(() => {
@@ -42,19 +43,18 @@ export const Map = React.memo(({ map, zoom, tileToPlace = null, disabled = false
                 zoom={zoom}
             />
         ))}
-        {corneredPossiblePlacements.map(([corner, placement], i) => {
+        {corneredPossiblePlacements.map(([corner, placement]) => {
             const placedTile = { tile: tileToPlace, placement }
 
             return <PlacedTile preview corner={corner}
                 key={getPlacedTileKey(placedTile)}
-                label={String(i + 1)}
                 placedTile={placedTile}
                 zoom={zoom}
-                pointerup={() => !disabled && onSelectPlacement(placement)}
+                onClick={() => onSelectPlacement(placement)}
             />
         })}
     </Container>
-}, (prev, next) => JSON.stringify(prev) === JSON.stringify(next))
+}, deepEqual)
 
 function getPlacedTileKey({ tile: { pattern }, placement: { position: { x, y }, rotation } }) {
     return `${x}-${y}-${pattern}-${rotation}`

@@ -1,9 +1,9 @@
-import { rotatePattern, Feature } from '@vitalyrudenko/carcaso-core'
-import { Container, Graphics, Text } from '@inlet/react-pixi'
-import { TextStyle } from 'pixi.js'
 import React from 'react'
+import deepEqual from 'fast-deep-equal/react'
+import { rotatePattern, Feature } from '@vitalyrudenko/carcaso-core'
+import { Container, Graphics } from '@inlet/react-pixi'
 
-export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false, label = null, corner = -1, ...props }) => {
+export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false, corner = -1, onClick }) => {
     const scale = zoom / 100
 
     const { x, y } = placedTile.placement.position
@@ -27,23 +27,7 @@ export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false,
     const offsetX = ((corner === 1 || corner === 3) ? tileWidth + innerOffsetX : 0) + innerOffsetX
     const offsetY = ((corner === 2 || corner === 3) ? tileHeight + innerOffsetY : 0) + innerOffsetY
 
-    return <Container sortableChildren interactive={preview} buttonMode={preview} {...props}>
-        {/* {label && preview && <Text
-            zIndex={2}
-            text={label}
-            style={new TextStyle({
-                fontSize: small ? 16 : 24,
-                fill: 0xFFFFFF,
-                dropShadow: true,
-                dropShadowBlur: 2,
-                dropShadowAngle: 90,
-                dropShadowAlpha: 0.5,
-                dropShadowDistance: 1,
-            })}
-            anchor={0} 
-            x={x * mapTileWidth + offsetX + tileWidth * 0.05}
-            y={-y * mapTileHeight + offsetY + tileHeight * 0.05}
-        />} */}
+    return <Container sortableChildren interactive={preview} buttonMode={preview} pointerup={onClick}>
         <Graphics
             zIndex={1}
             x={x * mapTileWidth + offsetX}
@@ -104,7 +88,7 @@ export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false,
             }}
         />
     </Container>
-}, (prev, next) => JSON.stringify(prev) === JSON.stringify(next))
+}, deepEqual)
 
 const VisualFeature = {
     ...Feature,
