@@ -87,10 +87,16 @@ const initialMap = generateRandomMap(10) || [
 const tileToPlace = tiles[Math.floor(Math.random() * tiles.length)]
 
 const ZOOMS =[
+    25,
+    40,
     50,
+    60,
     75,
+    90,
     100,
+    125,
     150,
+    175,
     200,
 ]
 
@@ -103,24 +109,28 @@ export function GamePage() {
     const [zoom, setZoom] = useState(100)
     const [[width, height], setWidthHeight] = useState([window.innerWidth, window.innerHeight])
     const lastClientPosition = useRef({ x: 0, y: 0 })
+    const lastDistance = useRef(0)
+    const isMultiTouch = useRef(false)
+
+    const zoomIn = useCallback((increment) => {
+        let index = ZOOMS.indexOf(zoom) || 0
+        index += increment
+        index = Math.max(0, Math.min(ZOOMS.length - 1, index))
+        setZoom(ZOOMS[index])
+    }, [zoom])
 
     useEffect(() => {
         const listener = (event) => {
-            let index = ZOOMS.indexOf(zoom) || 0
-
             if (event.deltaY > 0) {
-                index--
+                zoomIn(-1)
             } else {
-                index++
+                zoomIn(1)
             }
-
-            index = Math.max(0, Math.min(ZOOMS.length - 1, index))
-            setZoom(ZOOMS[index])
         }
 
         window.addEventListener('wheel', listener)
         return () => window.removeEventListener('wheel', listener)
-    }, [zoom])
+    }, [zoomIn])
 
     useEffect(() => {
         const listener = () => {
@@ -150,7 +160,7 @@ export function GamePage() {
                     lastClientPosition.current.y = event.clientY
                 }}
                 onPointerMove={(event) => {
-                    if (!dragging.current) return
+                    if (isMultiTouch.current || !dragging.current) return
 
                     hasMoved.current = true
                     setPosition({
@@ -164,7 +174,49 @@ export function GamePage() {
                 onPointerUp={() => {
                     dragging.current = false
                     hasMoved.current = false
-                }} >
+                }}
+                onTouchStart={(event) => {
+                    lastDistance.current = 0
+                    
+                    if (event.touches.length !== 1) {
+                        isMultiTouch.current = true
+                    } else {
+                        isMultiTouch.current = false
+                    }
+                }}
+                onTouchMove={(event) => {
+                    if (event.touches.length !== 1) {
+                        isMultiTouch.current = true
+                    } else {
+                        isMultiTouch.current = false
+                    }
+
+                    if (event.touches.length === 2) {
+                        const touch1 = event.touches.item(0)
+                        const touch2 = event.touches.item(1)
+                        const distance = Math.sqrt((touch2.clientX - touch1.clientX) ** 2 + (touch2.clientY - touch1.clientY) ** 2)
+
+                        if (lastDistance.current !== 0) {
+                            const last = Math.floor(lastDistance.current / 50)
+                            const curr = Math.floor(distance / 50)
+
+                            if (curr > last) {
+                                zoomIn(1)
+                            }
+
+                            if (last > curr) {
+                                zoomIn(-1)
+                            }
+                        }
+
+                        lastDistance.current = distance
+                    }
+                }}
+                onTouchEnd={() => {
+                    lastDistance.current = 0
+                    isMultiTouch.current = false
+                }}
+                >
                 <Container x={position.x} y={position.y} anchor={0.5}>
                     <Map
                         map={map}
