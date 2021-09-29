@@ -113,6 +113,16 @@ describe('findTilePlacements()', () => {
                 { position: { x: 0, y: -1 }, rotation: 1 },
                 { position: { x: 0, y: -1 }, rotation: 3 },
             ])
+
+        expect(findTilePlacements({ pattern: 'wwwff' }, map))
+            .to.deep.equalInAnyOrder([
+                { position: { x: 0, y: -1 }, rotation: 0 },
+            ])
+
+        expect(findTilePlacements({ pattern: 'ffwfw' }, map))
+            .to.deep.equalInAnyOrder([
+                { position: { x: 0, y: -1 }, rotation: 2 },
+            ])
     })
 
     it('should return proper variations for river tiles (2)', () => {
@@ -125,27 +135,15 @@ describe('findTilePlacements()', () => {
                 { position: { x: -1, y: 0 }, rotation: 0 },
                 { position: { x: -1, y: 0 }, rotation: 2 },
             ])
-    })
-
-    it('should return proper variations for river tiles (3)', () => {
-        const map = [
-            { tile: { pattern: 'ffwfw' }, placement: { rotation: 1, position: { x: 0, y: 0 } } }
-        ]
 
         expect(findTilePlacements({ pattern: 'wwwff' }, map))
             .to.deep.equalInAnyOrder([
                 { position: { x: -1, y: 0 }, rotation: 2 },
             ])
-    })
 
-    it('should return proper variations for river tiles (4)', () => {
-        const map = [
-            { tile: { pattern: 'ffwfw' }, placement: { rotation: 0, position: { x: 0, y: 0 } } }
-        ]
-
-        expect(findTilePlacements({ pattern: 'wwwff' }, map))
+        expect(findTilePlacements({ pattern: 'ffwfw' }, map))
             .to.deep.equalInAnyOrder([
-                { position: { x: 0, y: -1 }, rotation: 0 },
+                { position: { x: -1, y: 0 }, rotation: 3 },
             ])
     })
 

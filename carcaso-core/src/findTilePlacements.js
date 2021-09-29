@@ -67,7 +67,7 @@ function canTileBePlaced(map, tile, placement) {
     if (bottomPlacedTile && bottomTileTop !== bottom) return false
 
     if (pattern.includes(Feature.RIVER)) {
-        if (!topPlacedTile && !rightPlacedTile) {
+        if (!topPlacedTile && !leftPlacedTile && !rightPlacedTile && !bottomPlacedTile) {
             if (top === Feature.RIVER || right === Feature.RIVER) return false
             return left === Feature.RIVER || bottom === Feature.RIVER
         }
