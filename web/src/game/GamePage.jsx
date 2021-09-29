@@ -104,7 +104,7 @@ export function GamePage() {
     const [map, setMap] = useState(initialMap)
 
     const dragging = useRef(false)
-    const hasMoved = useRef(false)
+    const isDisabled = useRef(false)
     const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
     const [zoom, setZoom] = useState(100)
     const [[width, height], setWidthHeight] = useState([window.innerWidth, window.innerHeight])
@@ -142,11 +142,11 @@ export function GamePage() {
     }, [])
 
     const handleSelectPlacement = useCallback((placement) => {
-        if (hasMoved.current) return
+        if (isDisabled.current) return
 
         const placedTile = { tile: tileToPlace, placement }
         setMap([...map, placedTile])
-    }, [hasMoved, map])
+    }, [isDisabled, map])
 
     return (
         <div id="game-page" className="page">
@@ -154,7 +154,7 @@ export function GamePage() {
                 options={{ backgroundColor: 0x7f8778, antialias: true }}
                 onPointerDown={(event) => {
                     dragging.current = true
-                    hasMoved.current = false
+                    isDisabled.current = false
 
                     lastClientPosition.current.x = event.clientX
                     lastClientPosition.current.y = event.clientY
@@ -162,7 +162,7 @@ export function GamePage() {
                 onPointerMove={(event) => {
                     if (isMultiTouch.current || !dragging.current) return
 
-                    hasMoved.current = true
+                    isDisabled.current = true
                     setPosition({
                         x: Math.trunc(position.x + event.clientX - lastClientPosition.current.x),
                         y: Math.trunc(position.y + event.clientY - lastClientPosition.current.y),
@@ -173,13 +173,14 @@ export function GamePage() {
                 }}
                 onPointerUp={() => {
                     dragging.current = false
-                    hasMoved.current = false
+                    isDisabled.current = false
                 }}
                 onTouchStart={(event) => {
                     lastDistance.current = 0
                     
                     if (event.touches.length !== 1) {
                         isMultiTouch.current = true
+                        isDisabled.current = true
                     } else {
                         isMultiTouch.current = false
                     }
@@ -187,6 +188,7 @@ export function GamePage() {
                 onTouchMove={(event) => {
                     if (event.touches.length !== 1) {
                         isMultiTouch.current = true
+                        isDisabled.current = true
                     } else {
                         isMultiTouch.current = false
                     }
@@ -215,6 +217,7 @@ export function GamePage() {
                 onTouchEnd={() => {
                     lastDistance.current = 0
                     isMultiTouch.current = false
+                    isDisabled.current = false
                 }}
                 >
                 <Container x={position.x} y={position.y} anchor={0.5}>
