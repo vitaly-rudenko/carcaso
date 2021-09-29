@@ -96,8 +96,6 @@ const initialMap = generateRandomMap(2) || [
 
 const tileToPlace = tiles[Math.floor(Math.random() * tiles.length)]
 
-const ZOOMS = [20, 25, 30, 35, 40, 50, 75, 100, 125, 150, 175, 200]
-
 export function GamePage() {
     const [map, setMap] = useState(initialMap)
 
@@ -111,10 +109,7 @@ export function GamePage() {
     const isMultiTouch = useRef(false)
 
     const zoomIn = useCallback((increment) => {
-        let index = ZOOMS.indexOf(zoom) || 0
-        index += increment
-        index = Math.max(0, Math.min(ZOOMS.length - 1, index))
-        setZoom(ZOOMS[index])
+        setZoom(Math.max(20, Math.min(zoom + increment * 10, 200)))
     }, [zoom])
 
     useEffect(() => {
