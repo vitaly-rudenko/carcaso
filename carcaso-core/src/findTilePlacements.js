@@ -58,8 +58,8 @@ function canTileBePlaced(map, tile, placement) {
     const rightTileLeft = rightPlacedTile && rotatePattern(rightPlacedTile.tile.pattern, rightPlacedTile.placement.rotation)[1]
 
     if (pattern.includes(Feature.RIVER)) {
+        if (top === Feature.RIVER) return right !== Feature.RIVER && topTileBottom === Feature.RIVER
         if (right === Feature.RIVER) return rightTileLeft === Feature.RIVER
-        if (top === Feature.RIVER && topTileBottom === Feature.RIVER) return true
         
         return false
     }
