@@ -219,7 +219,7 @@ export function drawConnector(p, x, y, g, rx, ry, width, height) {
             g.endFill()
 
             g.lineStyle({
-                width: 1,
+                width: 1.5,
                 color: 0x000000,
                 alpha: 0.5,
             })

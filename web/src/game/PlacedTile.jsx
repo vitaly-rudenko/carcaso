@@ -16,8 +16,8 @@ export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false,
 
     const rotatedPattern = rotatePattern(placedTile.tile.pattern, placedTile.placement.rotation)
 
-    const innerOffsetX = (preview ? 2 : 0) * scale
-    const innerOffsetY = (preview ? 2 : 0) * scale
+    const innerOffsetX = (preview ? 3 : 0) * scale
+    const innerOffsetY = (preview ? 3 : 0) * scale
 
     const mapTileWidth = 48 * scale
     const mapTileHeight = 48 * scale
@@ -38,7 +38,7 @@ export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false,
             zIndex={1}
             x={x * mapTileWidth + offsetX}
             y={-y * mapTileHeight + offsetY}
-            alpha={preview ? scale : 1}
+            alpha={preview ? 0.75 : 1}
             draw={g => {
                 g.clear()
 
@@ -75,15 +75,7 @@ export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false,
                     }
                 }
 
-                if (preview) {
-                    g.beginFill(0x000000, scale * 0.25)
-                    g.drawRect(-1, -1, tileWidth + 2, tileHeight + 2)
-                    g.endFill()
-
-                    g.beginHole()
-                    g.drawRect(0, 0, tileWidth, tileHeight)
-                    g.endHole()
-                } else {
+                if (!preview) {
                     g.beginFill(0x000000, scale * 0.1)
                     g.drawRect(0, 0, tileWidth, tileHeight)
                     g.endFill()

@@ -1,24 +1,35 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { tiles, findTilePlacements } from '@vitalyrudenko/carcaso-core'
+import { tiles, findTilePlacements, Feature } from '@vitalyrudenko/carcaso-core'
 import { Container, Stage } from '@inlet/react-pixi'
 import { Map } from './Map.jsx'
 import './GamePage.css'
+import { shuffleArray } from './utils/shuffleArray.js'
+
+function generateMapWithRiver() {
+    const map = []
+
+    const starterTile = tiles.find(tile => tile.pattern === 'ffwfw')
+    const riverTiles = shuffleArray(tiles.filter(tile => tile.pattern.includes(Feature.RIVER) && tile.pattern !== starterTile.pattern))
+
+    map.push({ tile: starterTile, placement: { position: { x: 0, y: 0 }, rotation: 0 } })
+
+    for (const tile of riverTiles) {
+        const placements = findTilePlacements(tile, map)
+        const placement = placements[Math.floor(Math.random() * placements.length)]
+        if (!placement) {
+            throw new Error(`Could not place ${tile.pattern} on ${JSON.stringify(map)}`)
+        }
+
+        map.push({ tile, placement })
+    }
+
+    map.push({ tile: starterTile, placement: findTilePlacements(starterTile, map)[0] })
+
+    return map
+}
 
 function generateRandomMap(iterations = 10) {
-    const map = [
-        { tile: { pattern: 'ffwfw' }, placement: { rotation: 0, position: { x: 0, y: 4 } } },
-        { tile: { pattern: 'fwwwf' }, placement: { rotation: 1, position: { x: 0, y: 3 } } },
-        { tile: { pattern: 'fwwwf' }, placement: { rotation: 1, position: { x: 0, y: 2 } } },
-        { tile: { pattern: 'fwwfw' }, placement: { rotation: 1, position: { x: 0, y: 1 } } },
-        { tile: { pattern: 'cwwwc' }, placement: { rotation: 0, position: { x: -1, y: 1 } } },
-        { tile: { pattern: 'fwwfw' }, placement: { rotation: 3, position: { x: -2, y: 1 } } },
-        { tile: { pattern: 'fwmwf' }, placement: { rotation: 1, position: { x: -2, y: 0 } } },
-        { tile: { pattern: 'cwrwr' }, placement: { rotation: 1, position: { x: -2, y: -1 } } },
-        { tile: { pattern: 'rwrwr' }, placement: { rotation: 1, position: { x: -2, y: -2 } } },
-        { tile: { pattern: 'rwrrw' }, placement: { rotation: 1, position: { x: -2, y: -3 } } },
-        { tile: { pattern: 'fwwfw' }, placement: { rotation: 3, position: { x: -3, y: -3 } } },
-        { tile: { pattern: 'ffwfw' }, placement: { rotation: 2, position: { x: -3, y: -4 } } },
-    ]
+    const map = generateMapWithRiver()
 
     for (let iteration = 0; iteration < iterations; iteration++) {
         const remainingTiles = []
@@ -31,33 +42,32 @@ function generateRandomMap(iterations = 10) {
         let hasAdded = true
         while (remainingTiles.length > 0 && hasAdded) {
             hasAdded = false
-    
-            for (let i = remainingTiles.length - 1; i >= 0; i--) {
-                const tile = remainingTiles[i]
-                
-                let placements
-                if (map.length === 0) {
-                    placements = [{ position: { x: 0, y: 0 }, rotation: 0 }]
-                } else {
-                    placements = findTilePlacements(tile, map)
-                        .filter(p => Math.abs(p.position.x) < 10 && Math.abs(p.position.y) < 10)
-                }
 
-                if (placements.length === 0) continue
-    
-                const placement = placements[Math.floor(Math.random() * placements.length)]
-                map.push({ tile, placement })
-                hasAdded = true
-    
-                remainingTiles.splice(i, 1)
+            const i = 0
+            const tile = remainingTiles[i]
+            
+            let placements
+            if (map.length === 0) {
+                placements = [{ position: { x: 0, y: 0 }, rotation: 0 }]
+            } else {
+                placements = findTilePlacements(tile, map)
+                    .filter(p => Math.abs(p.position.x) < 10 && Math.abs(p.position.y) < 10)
             }
+
+            if (placements.length === 0) continue
+
+            const placement = placements[Math.floor(Math.random() * placements.length)]
+            map.push({ tile, placement })
+            hasAdded = true
+
+            remainingTiles.splice(i, 1)
         }
     }
 
     return map
 }
 
-const initialMap = generateRandomMap(10) || [
+const initialMap = generateRandomMap(2) || [
     ...tiles.map((tile, i) => ({
         tile, placement: { position: { x: i, y: 0 }, rotation: 0 }
     })),
@@ -86,19 +96,7 @@ const initialMap = generateRandomMap(10) || [
 
 const tileToPlace = tiles[Math.floor(Math.random() * tiles.length)]
 
-const ZOOMS =[
-    25,
-    40,
-    50,
-    60,
-    75,
-    90,
-    100,
-    125,
-    150,
-    175,
-    200,
-]
+const ZOOMS = [20, 25, 30, 35, 40, 50, 75, 100, 125, 150, 175, 200]
 
 export function GamePage() {
     const [map, setMap] = useState(initialMap)
@@ -151,7 +149,7 @@ export function GamePage() {
     return (
         <div id="game-page" className="page">
             <Stage width={width} height={height}
-                options={{ backgroundColor: 0x7f8778, antialias: true }}
+                options={{ backgroundColor: 0x7f8778, resolution: 2, antialias: true }}
                 onPointerDown={(event) => {
                     dragging.current = true
                     isDisabled.current = false

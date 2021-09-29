@@ -4,13 +4,6 @@ import { Container } from '@inlet/react-pixi'
 import { findTilePlacements } from '@vitalyrudenko/carcaso-core'
 import { PlacedTile } from './PlacedTile.jsx'
 
-const CORNERS = [
-    [-1],
-    [0, 1],
-    [0, 1, 2],
-    [0, 1, 2, 3]
-]
-
 export const Map = React.memo(({ map, zoom, tileToPlace = null, onSelectPlacement }) => {
     const possiblePlacements = useMemo(() => tileToPlace ? findTilePlacements(tileToPlace, map) : [], [map, tileToPlace])
 
@@ -28,8 +21,7 @@ export const Map = React.memo(({ map, zoom, tileToPlace = null, onSelectPlacemen
         
         const corneredPossiblePlacements = []
         for (const placements of Object.values(groupedPlacements)) {
-            const corners = CORNERS[placements.filter(Boolean).length - 1]
-            corneredPossiblePlacements.push(...placements.map((placement, i) => [corners[i], placement]))
+            corneredPossiblePlacements.push(...placements.map((placement, i) => [placements.length > 1 ? i : -1, placement]))
         }
 
         return corneredPossiblePlacements
