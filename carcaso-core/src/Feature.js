@@ -6,4 +6,5 @@ export const Feature = {
     RIVER: 'w',
     MONASTERY: 'm',
     COAT_OF_ARMS: 'a',
+    BORDER: 'b',
 }
