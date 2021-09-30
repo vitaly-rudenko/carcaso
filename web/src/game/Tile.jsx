@@ -62,22 +62,23 @@ export const Tile = React.memo(({
                             feature === VisualFeature.FIELD ||
                             feature === VisualFeature.COAT_OF_ARMS ||
                             feature === VisualFeature.MONASTERY ||
-                            feature === VisualFeature.TOWN ||
-                            feature === VisualFeature.CONNECTOR
+                            feature === VisualFeature.TOWN
                         ) continue
 
-                        g.beginFill(getVisualFeatureColor(feature))
-                        g.drawRect(x * featureWidth, y * featureHeight, featureWidth, featureHeight)
-                        g.endFill()
+                        if (feature === VisualFeature.CONNECTOR) {
+                            drawConnector(visualPattern, x, y, g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
+                        } else {
+                            g.beginFill(getVisualFeatureColor(feature))
+                            g.drawRect(x * featureWidth, y * featureHeight, featureWidth, featureHeight)
+                            g.endFill()
+                        }
                     }
                 }
 
                 // special
                 for (const [y, row] of visualPattern.entries()) {
                     for (const [x, feature] of row.entries()) {
-                        if (feature === VisualFeature.CONNECTOR) {
-                            drawConnector(visualPattern, x, y, g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
-                        } else if (feature === VisualFeature.COAT_OF_ARMS) {
+                        if (feature === VisualFeature.COAT_OF_ARMS) {
                             drawCoatOfArms(g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
                         } else if (feature === VisualFeature.MONASTERY) {
                             drawMonastery(g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
