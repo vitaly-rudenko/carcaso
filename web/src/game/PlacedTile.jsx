@@ -9,7 +9,13 @@ import { drawCoatOfArms } from './graphics/drawCoatOfArms.js'
 import { drawMonastery } from './graphics/drawMonastery.js'
 import { drawConnector } from './graphics/drawConnector.js'
 
-export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false, corner = -1, onClick }) => {
+export const PlacedTile = React.memo(({
+    placedTile,
+    zoom = 100,
+    preview = false,
+    corner = -1,
+    onSelect,
+}) => {
     const scale = zoom / 100
 
     const { x, y } = placedTile.placement.position
@@ -33,7 +39,7 @@ export const PlacedTile = React.memo(({ placedTile, zoom = 100, preview = false,
     const offsetX = ((corner === 1 || corner === 2) ? tileWidth + innerOffsetX : 0) + innerOffsetX
     const offsetY = ((corner === 1 || corner === 3) ? tileHeight + innerOffsetY : 0) + innerOffsetY
 
-    return <Container sortableChildren interactive={preview} buttonMode={preview} pointerup={onClick}>
+    return <Container sortableChildren interactive={preview} buttonMode={preview} pointerup={onSelect}>
         <Graphics
             zIndex={1}
             x={x * mapTileWidth + offsetX}

@@ -42,7 +42,7 @@ export const Map = React.memo(({ map, zoom, tileToPlace = null, onSelectPlacemen
                 key={getPlacedTileKey(placedTile)}
                 placedTile={placedTile}
                 zoom={zoom}
-                onClick={() => onSelectPlacement(placement)}
+                onSelect={() => onSelectPlacement(placement)}
             />
         })}
     </Container>

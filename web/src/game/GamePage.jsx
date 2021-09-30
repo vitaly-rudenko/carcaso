@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { tiles, findTilePlacements, Feature } from '@vitalyrudenko/carcaso-core'
 import { Container, Stage } from '@inlet/react-pixi'
+import { shuffleArray } from './utils/shuffleArray.js'
+import { randomItem } from './utils/randomItem.js'
 import { Map } from './Map.jsx'
 import './GamePage.css'
-import { shuffleArray } from './utils/shuffleArray.js'
 
 function generateMapWithRiver() {
     const map = []
@@ -15,7 +16,7 @@ function generateMapWithRiver() {
 
     for (const tile of riverTiles) {
         const placements = findTilePlacements(tile, map)
-        const placement = placements[Math.floor(Math.random() * placements.length)]
+        const placement = randomItem(placements)
         if (!placement) {
             throw new Error(`Could not place ${tile.pattern} on ${JSON.stringify(map)}`)
         }
@@ -56,7 +57,7 @@ function generateRandomMap(iterations = 10) {
 
             if (placements.length === 0) continue
 
-            const placement = placements[Math.floor(Math.random() * placements.length)]
+            const placement = randomItem(placements)
             map.push({ tile, placement })
             hasAdded = true
 
@@ -67,7 +68,7 @@ function generateRandomMap(iterations = 10) {
     return map
 }
 
-const initialMap = generateRandomMap(2) || [
+const initialMap = generateRandomMap(5) || [
     ...tiles.map((tile, i) => ({
         tile, placement: { position: { x: i, y: 0 }, rotation: 0 }
     })),
@@ -94,7 +95,7 @@ const initialMap = generateRandomMap(2) || [
     { tile: { pattern: 'fffff' }, placement: { position: { x: 4, y: 6 }, rotation: 0 } },
 ]
 
-const tileToPlace = tiles[Math.floor(Math.random() * tiles.length)]
+const tileToPlace = randomItem(tiles)
 
 export function GamePage() {
     const [map, setMap] = useState(initialMap)
