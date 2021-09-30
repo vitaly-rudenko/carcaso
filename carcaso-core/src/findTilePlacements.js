@@ -1,8 +1,10 @@
 import { Feature } from './Feature.js'
+import { getPlaceablePositions } from './getPlaceablePositions.js'
+import { getPlacedTilesAround } from './getPlacedTilesAround.js'
 import { rotatePattern } from './rotatePattern.js'
 
 export function findTilePlacements(tile, map) {
-    const positions = getFreeMapPositions(map)
+    const positions = getPlaceablePositions(map)
     const placements = []
 
     for (let rotation = 0; rotation < 4; rotation++) {
@@ -20,41 +22,12 @@ export function findTilePlacements(tile, map) {
     return placements
 }
 
-export function getFreeMapPositions(map) {
-    if (map.length === 0) {
-        return [{ x: 0, y: 0 }]
-    }
-
-    const positions = []
-
-    for (const placedTile of map) {
-        const { x, y } = placedTile.placement.position
-
-        positions.push(
-            ...[
-                { x: x - 1, y: y + 0 },
-                { x: x + 1, y: y + 0 },
-                { x: x + 0, y: y - 1 },
-                { x: x + 0, y: y + 1 },
-            ]
-                .filter(({ x, y }) => positions.every(p => p.x !== x || p.y !== y))
-                .filter(({ x, y }) => !getPlacedTile(map, { x, y }))
-        )
-    }
-
-    return positions
-}
-
 function canTileBePlaced(map, tile, placement) {
     const { pattern } = tile
-    const { position, rotation } = placement
-    const { x, y } = position
+    const { rotation } = placement
 
     const [top, left, _, right, bottom] = rotatePattern(pattern, rotation)
-    const topPlacedTile = getPlacedTile(map, { x, y: y + 1 })
-    const leftPlacedTile = getPlacedTile(map, { x: x - 1, y })
-    const rightPlacedTile = getPlacedTile(map, { x: x + 1, y })
-    const bottomPlacedTile = getPlacedTile(map, { x, y: y - 1 })
+    const [topPlacedTile, leftPlacedTile, rightPlacedTile, bottomPlacedTile] = getPlacedTilesAround({ placement }, map)
 
     const topTileBottom = topPlacedTile && rotatePattern(topPlacedTile.tile.pattern, topPlacedTile.placement.rotation)[4]
     const bottomTileTop = bottomPlacedTile && rotatePattern(bottomPlacedTile.tile.pattern, bottomPlacedTile.placement.rotation)[0]
@@ -79,8 +52,4 @@ function canTileBePlaced(map, tile, placement) {
     }
     
     return true
-}
-
-function getPlacedTile(map, position) {
-    return map.find(tile => tile.placement.position.x === position.x && tile.placement.position.y === position.y) || null
 }

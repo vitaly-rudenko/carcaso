@@ -1,18 +1,18 @@
 import chai, { expect } from 'chai'
 import deepEqualInAnyOrder from 'deep-equal-in-any-order'
-import { getFreeMapPositions, findTilePlacements } from '../src/findTilePlacements.js'
+import { findTilePlacements } from '../src/findTilePlacements.js'
 
 chai.use(deepEqualInAnyOrder)
 
 describe('findTilePlacements()', () => {
     it('should return all possible placements for empty map (non-river tile)', () => {
         expect(findTilePlacements({ pattern: 'ffmff' }, []))
-        .to.deep.eq([
-            { position: { x: 0, y: 0 }, rotation: 0 },
-        ])
+            .to.deep.equalInAnyOrder([
+                { position: { x: 0, y: 0 }, rotation: 0 },
+            ])
 
         expect(findTilePlacements({ pattern: 'ffmfr' }, []))
-            .to.deep.eq([
+            .to.deep.equalInAnyOrder([
                 { position: { x: 0, y: 0 }, rotation: 0 },
                 { position: { x: 0, y: 0 }, rotation: 1 },
                 { position: { x: 0, y: 0 }, rotation: 2 },
@@ -22,7 +22,7 @@ describe('findTilePlacements()', () => {
 
     it('should return all possible placements for empty map (river tile)', () => {
         expect(findTilePlacements({ pattern: 'ffwfw' }, []))
-            .to.deep.eq([
+            .to.deep.equalInAnyOrder([
                 { position: { x: 0, y: 0 }, rotation: 0 },
                 { position: { x: 0, y: 0 }, rotation: 1 },
             ])
@@ -34,7 +34,7 @@ describe('findTilePlacements()', () => {
         ]
 
         expect(findTilePlacements({ pattern: 'ffmff' }, map))
-            .to.deep.eq([])
+            .to.deep.equalInAnyOrder([])
     })
 
     it('should return possible placements for tiles on empty map', () => {
@@ -145,45 +145,5 @@ describe('findTilePlacements()', () => {
             .to.deep.equalInAnyOrder([
                 { position: { x: -1, y: 0 }, rotation: 3 },
             ])
-    })
-
-    describe('getFreeMapPositions()', () => {
-        it('should return free placements on empty map', () => {
-            const map = [
-                { tile: { pattern: 'crccr' }, placement: { rotation: 0, position: { x: 0, y: 0 } } }
-            ]
-
-            expect(getFreeMapPositions(map))
-                .to.deep.equalInAnyOrder([
-                    { x: -1, y: 0 },
-                    { x: 1, y: 0 },
-                    { x: 0, y: -1 },
-                    { x: 0, y: 1 },
-                ])
-        })
-
-        it('should return free placements on simple map', () => {
-            const map = [
-                { tile: { pattern: 'crrrf' }, placement: { rotation: 0, position: { x: 0,  y: 0 } } },
-                { tile: { pattern: 'crccr' }, placement: { rotation: 0, position: { x: 1,  y: 1 } } },
-                { tile: { pattern: 'crccr' }, placement: { rotation: 1, position: { x: 1,  y: 0 } } },
-                { tile: { pattern: 'crccr' }, placement: { rotation: 2, position: { x: -1, y: 0 } } },
-                { tile: { pattern: 'crccr' }, placement: { rotation: 3, position: { x: -1, y: 1 } } },
-            ]
-
-            expect(getFreeMapPositions(map))
-                .to.deep.equalInAnyOrder([
-                    { x: -1, y: 2 },
-                    { x: -2, y: 1 },
-                    { x: -2, y: 0 },
-                    { x: -1, y: -1 },
-                    { x: 0, y: -1 },
-                    { x: 1, y: -1 },
-                    { x: 2, y: 0 },
-                    { x: 2, y: 1 },
-                    { x: 1, y: 2 },
-                    { x: 0, y: 1 },
-                ])
-        })
     })
 })
