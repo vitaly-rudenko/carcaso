@@ -47,9 +47,6 @@ export function getVisualPattern(pattern) {
             } else if (top === Feature.RIVER && bottom === Feature.RIVER) {
                 matrix[0][2] = VisualFeature.RIVER
                 matrix[1][2] = VisualFeature.RIVER
-                matrix[2][2] = VisualFeature.RIVER
-                matrix[2][2] = VisualFeature.RIVER
-                matrix[2][2] = VisualFeature.RIVER
             }
         } else if (rivers === 1) {
             if (top === Feature.RIVER && isCityFeature(center)) {
@@ -94,8 +91,6 @@ export function getVisualPattern(pattern) {
             } else if (top === Feature.ROAD && bottom === Feature.ROAD) {
                 matrix[0][2] = VisualFeature.ROAD
                 matrix[1][2] = VisualFeature.ROAD
-                matrix[2][2] = VisualFeature.ROAD
-                matrix[2][2] = VisualFeature.ROAD
                 matrix[2][2] = VisualFeature.ROAD
             }
         } else if (roads === 1) {
@@ -206,10 +201,6 @@ export function getVisualPattern(pattern) {
         }
 
         matrix = rotateMatrix(matrix)
-    }
-
-    if (matrix[2][2] === VisualFeature.RIVER && pattern[2] === Feature.ROAD) {
-        matrix[2][2] = VisualFeature.ROAD
     }
 
     return matrix
