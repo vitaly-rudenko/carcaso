@@ -8,9 +8,10 @@ import { getVisualFeatureColor } from './visual-features/getVisualFeatureColor.j
 import { drawCoatOfArms } from './graphics/drawCoatOfArms.js'
 import { drawMonastery } from './graphics/drawMonastery.js'
 import { drawConnector } from './graphics/drawConnector.js'
+import { drawTown } from './graphics/drawTown.js'
 
-export const PlacedTile = React.memo(({
-    placedTile,
+export const Tile = React.memo(({
+    tile,
     zoom = 100,
     preview = false,
     corner = -1,
@@ -18,9 +19,9 @@ export const PlacedTile = React.memo(({
 }) => {
     const scale = zoom / 100
 
-    const { x, y } = placedTile.placement.position
+    const { x, y } = tile.placement.position
 
-    const rotatedPattern = rotatePattern(placedTile.tile.pattern, placedTile.placement.rotation)
+    const rotatedPattern = rotatePattern(tile.pattern, tile.placement.rotation)
 
     const innerOffsetX = (preview ? 3 : 0) * scale
     const innerOffsetY = (preview ? 3 : 0) * scale
@@ -57,12 +58,13 @@ export const PlacedTile = React.memo(({
                 // regular
                 for (const [y, row] of visualPattern.entries()) {
                     for (const [x, feature] of row.entries()) {
-                        if (feature === VisualFeature.FIELD) continue
-                        if (feature === VisualFeature.COAT_OF_ARMS || feature === VisualFeature.MONASTERY) continue
-                        if (feature === VisualFeature.CONNECTOR) {
-                            drawConnector(visualPattern, x, y, g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
-                            continue
-                        }
+                        if (
+                            feature === VisualFeature.FIELD ||
+                            feature === VisualFeature.COAT_OF_ARMS ||
+                            feature === VisualFeature.MONASTERY ||
+                            feature === VisualFeature.TOWN ||
+                            feature === VisualFeature.CONNECTOR
+                        ) continue
 
                         g.beginFill(getVisualFeatureColor(feature))
                         g.drawRect(x * featureWidth, y * featureHeight, featureWidth, featureHeight)
@@ -73,10 +75,14 @@ export const PlacedTile = React.memo(({
                 // special
                 for (const [y, row] of visualPattern.entries()) {
                     for (const [x, feature] of row.entries()) {
-                        if (feature === VisualFeature.COAT_OF_ARMS) {
+                        if (feature === VisualFeature.CONNECTOR) {
+                            drawConnector(visualPattern, x, y, g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
+                        } else if (feature === VisualFeature.COAT_OF_ARMS) {
                             drawCoatOfArms(g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
                         } else if (feature === VisualFeature.MONASTERY) {
                             drawMonastery(g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
+                        } else if (feature === VisualFeature.TOWN) {
+                            drawTown(g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
                         }
                     }
                 }

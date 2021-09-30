@@ -9,6 +9,7 @@ export function getVisualFeatureColor(feature) {
         case VisualFeature.MONASTERY: return 0xD16547
         case VisualFeature.RIVER: return 0xaacfe3
         case VisualFeature.ROAD: return 0xEDF6E8
+        case VisualFeature.TOWN: return 0xe6d08a
         default: throw new Error(`Invalid visual feature: ${feature}`)
     }
 }

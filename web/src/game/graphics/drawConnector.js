@@ -220,8 +220,8 @@ export function drawConnector(p, x, y, g, rx, ry, width, height) {
 
             g.lineStyle({
                 width: 1.5,
-                color: 0x000000,
-                alpha: 0.5,
+                color: 0xfff9e8,
+                alpha: 1,
             })
 
             if (type === ConnectorType.LINE_RIGHT_LEFT) {

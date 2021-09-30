@@ -63,39 +63,39 @@ export function getVisualPattern(pattern) {
             }
         }
 
-        const roads = [...sides].filter(feature => feature === Feature.ROAD).length
+        const roads = [...sides].filter(feature => isRoadOrTown(feature)).length
         if (roads === 4) {
             matrix[0][2] = VisualFeature.ROAD
             matrix[1][2] = VisualFeature.ROAD
-            matrix[2][2] = VisualFeature.ROAD
+            matrix[2][2] = VisualFeature.TOWN
             matrix[3][2] = VisualFeature.ROAD
             matrix[4][2] = VisualFeature.ROAD
         } else if (roads === 3) {
-            if (top === Feature.ROAD && left === Feature.ROAD && center === Feature.ROAD && right === Feature.ROAD) {
+            if (isRoadOrTown(top) && isRoadOrTown(left) && isRoadOrTown(center) && isRoadOrTown(right)) {
                 matrix[0][2] = VisualFeature.ROAD
                 matrix[1][2] = VisualFeature.ROAD
                 matrix[2][1] = VisualFeature.ROAD
-                matrix[2][2] = VisualFeature.ROAD
+                matrix[2][2] = VisualFeature.TOWN
                 matrix[2][3] = VisualFeature.ROAD
             }
         } else if (roads === 2) {
-            if (top === Feature.ROAD && right === Feature.ROAD) {
+            if (isRoadOrTown(top) && isRoadOrTown(right)) {
                 matrix[1][3] = VisualFeature.CONNECTOR
                 matrix[1][2] = VisualFeature.CONNECTOR
                 matrix[2][3] = VisualFeature.CONNECTOR
 
-                if (matrix[2][2] === VisualFeature.ROAD) {
+                if (isRoadOrTown(matrix[2][2])) {
                     matrix[2][2] = VisualFeature.FIELD
                 }
-            } else if (top === Feature.ROAD && bottom === Feature.ROAD) {
+            } else if (isRoadOrTown(top) && isRoadOrTown(bottom)) {
                 matrix[0][2] = VisualFeature.ROAD
                 matrix[1][2] = VisualFeature.ROAD
                 matrix[2][2] = VisualFeature.ROAD
             }
         } else if (roads === 1) {
-            if (top === Feature.ROAD && center === Feature.MONASTERY) {
+            if (isRoadOrTown(top) && center === Feature.MONASTERY) {
                 matrix[1][2] = VisualFeature.ROAD
-            } else if (top === Feature.ROAD && center === Feature.ROAD) {
+            } else if (isRoadOrTown(top) && isRoadOrTown(center)) {
                 matrix[1][2] = VisualFeature.ROAD
                 matrix[2][2] = VisualFeature.ROAD
                 matrix[3][2] = VisualFeature.ROAD
@@ -203,4 +203,8 @@ export function getVisualPattern(pattern) {
     }
 
     return matrix
+}
+
+function isRoadOrTown(feature) {
+    return feature === Feature.ROAD || feature === Feature.TOWN
 }

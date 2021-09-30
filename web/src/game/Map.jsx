@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react'
 import deepEqual from 'fast-deep-equal/react'
 import { Container } from '@inlet/react-pixi'
-import { findTilePlacements } from '@vitalyrudenko/carcaso-core'
-import { PlacedTile } from './PlacedTile.jsx'
+import { findPatternPlacements } from '@vitalyrudenko/carcaso-core'
+import { Tile } from './Tile.jsx'
 
-export const Map = React.memo(({ map, zoom, tileToPlace = null, onSelectPlacement }) => {
-    const possiblePlacements = useMemo(() => tileToPlace ? findTilePlacements(tileToPlace, map) : [], [map, tileToPlace])
+export const Map = React.memo(({ map, zoom, patternToPlace = null, onSelectPlacement }) => {
+    const possiblePlacements = useMemo(() => patternToPlace ? findPatternPlacements(patternToPlace, map) : [], [map, patternToPlace])
 
     const corneredPossiblePlacements = useMemo(() => {
         const groupedPlacements = {}
@@ -28,19 +28,18 @@ export const Map = React.memo(({ map, zoom, tileToPlace = null, onSelectPlacemen
     }, [possiblePlacements])
 
     return <Container>
-        {map.map(placedTile => (
-            <PlacedTile
-                key={getPlacedTileKey(placedTile)}
-                placedTile={placedTile}
+        {map.map(tile => (
+            <Tile
+                key={getTileKey(tile)}
+                tile={tile}
                 zoom={zoom}
             />
         ))}
         {corneredPossiblePlacements.map(([corner, placement]) => {
-            const placedTile = { tile: tileToPlace, placement }
-
-            return <PlacedTile preview corner={corner}
-                key={getPlacedTileKey(placedTile)}
-                placedTile={placedTile}
+            const tile = { pattern: patternToPlace, placement }
+            return <Tile preview corner={corner}
+                key={getTileKey(tile)}
+                tile={tile}
                 zoom={zoom}
                 onSelect={() => onSelectPlacement(placement)}
             />
@@ -48,6 +47,6 @@ export const Map = React.memo(({ map, zoom, tileToPlace = null, onSelectPlacemen
     </Container>
 }, deepEqual)
 
-function getPlacedTileKey({ tile: { pattern }, placement: { position: { x, y }, rotation } }) {
+function getTileKey({ pattern, placement: { position: { x, y }, rotation } }) {
     return `${x}-${y}-${pattern}-${rotation}`
 }
