@@ -1,4 +1,4 @@
-import { getPlacedTile } from './getPlacedTile.js'
+import { getTile } from './getTile.js'
 import { getPositionsAround } from './getPositionsAround.js'
 
 export function getPlaceablePositions(map) {
@@ -8,11 +8,11 @@ export function getPlaceablePositions(map) {
 
     const positions = []
 
-    for (const placedTile of map) {
+    for (const tile of map) {
         positions.push(
-            ...getPositionsAround(placedTile.placement.position)
+            ...getPositionsAround(tile.placement.position)
                 .filter(({ x, y }) => positions.every(p => p.x !== x || p.y !== y))
-                .filter(({ x, y }) => !getPlacedTile(map, { x, y }))
+                .filter(({ x, y }) => !getTile(map, { x, y }))
         )
     }
 

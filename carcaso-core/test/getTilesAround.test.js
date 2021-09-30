@@ -1,7 +1,7 @@
 import { expect } from 'chai'
-import { getPlacedTilesAround } from '../src/getPlacedTilesAround.js'
+import { getTilesAround } from '../src/getTilesAround.js'
 
-describe('getPlacedTilesAround()', () => {
+describe('getTilesAround()', () => {
     const topLeft = { placement: { position: { x: -1, y: 1 } } }
     const top = { placement: { position: { x: 0, y: 1 } } }
     const topRight = { placement: { position: { x: 1, y: 1 } } }
@@ -17,7 +17,7 @@ describe('getPlacedTilesAround()', () => {
 
     it('should return positions around', () => {
         expect(
-            getPlacedTilesAround(center, emptyMap)
+            getTilesAround(position(center), emptyMap)
         ).to.deep.eq([
             null, // top
             null, // left
@@ -26,17 +26,17 @@ describe('getPlacedTilesAround()', () => {
         ])
 
         expect(
-            getPlacedTilesAround(center, completeMap)
+            getTilesAround(position(center), completeMap)
         ).to.deep.eq([top, left, right, bottom])
 
         expect(
-            getPlacedTilesAround(bottomRight, completeMap)
+            getTilesAround(position(bottomRight), completeMap)
         ).to.deep.eq([right, bottom, null, null])
     })
 
     it('should return positions around (including corners)', () => {
         expect(
-            getPlacedTilesAround(center, emptyMap, { includeCorners: true })
+            getTilesAround(position(center), emptyMap, { includeCorners: true })
         ).to.deep.eq([
             null, // top left
             null, // top
@@ -49,11 +49,15 @@ describe('getPlacedTilesAround()', () => {
         ])
 
         expect(
-            getPlacedTilesAround(center, completeMap, { includeCorners: true })
+            getTilesAround(position(center), completeMap, { includeCorners: true })
         ).to.deep.eq([topLeft, top, topRight, left, right, bottomLeft, bottom, bottomRight])
 
         expect(
-            getPlacedTilesAround(bottomRight, completeMap, { includeCorners: true })
+            getTilesAround(position(bottomRight), completeMap, { includeCorners: true })
         ).to.deep.eq([center, right, null, bottom, null, null, null, null])
     })
 })
+
+function position(tile) {
+    return tile.placement.position
+}

@@ -1,5 +1,5 @@
 // cities x roads
-export const tiles = [
+export const deckTiles = [
     // --- non-river tiles
     // 0x0
     `
@@ -98,17 +98,17 @@ export const tiles = [
     // 0x3
     `
     _f_
-    rrr x4
+    rtr x4
     _r_`,
     // 1x3
     `
     _c_
-    rrr x3
+    rtr x3
     _r_`,
     // 0x4
     `
     _r_
-    rrr x1
+    rtr x1
     _r_`,
     // --- rivers
     // 0x0
@@ -152,9 +152,9 @@ export const tiles = [
     _r_
     wrr x1
     _w_`,
-].map(serialized => parseTile(serialized))
+].map(serialized => parseDeckTile(serialized))
 
-export function parseTile(serialized) {
+export function parseDeckTile(serialized) {
     const rows = serialized
         .split('\n')
         .map(row => row.trim())

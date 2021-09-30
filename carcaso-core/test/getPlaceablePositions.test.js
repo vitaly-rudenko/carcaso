@@ -7,7 +7,7 @@ chai.use(deepEqualInAnyOrder)
 describe('getPlaceablePositions()', () => {
     it('should return free placements on empty map', () => {
         const map = [
-            { tile: { pattern: 'crccr' }, placement: { rotation: 0, position: { x: 0, y: 0 } } }
+            { pattern: 'crccr', placement: { rotation: 0, position: { x: 0, y: 0 } } }
         ]
 
         expect(getPlaceablePositions(map))
@@ -21,11 +21,11 @@ describe('getPlaceablePositions()', () => {
 
     it('should return free placements on simple map', () => {
         const map = [
-            { tile: { pattern: 'crrrf' }, placement: { rotation: 0, position: { x: 0,  y: 0 } } },
-            { tile: { pattern: 'crccr' }, placement: { rotation: 0, position: { x: 1,  y: 1 } } },
-            { tile: { pattern: 'crccr' }, placement: { rotation: 1, position: { x: 1,  y: 0 } } },
-            { tile: { pattern: 'crccr' }, placement: { rotation: 2, position: { x: -1, y: 0 } } },
-            { tile: { pattern: 'crccr' }, placement: { rotation: 3, position: { x: -1, y: 1 } } },
+            { pattern: 'crrrf', placement: { rotation: 0, position: { x: 0,  y: 0 } } },
+            { pattern: 'crccr', placement: { rotation: 0, position: { x: 1,  y: 1 } } },
+            { pattern: 'crccr', placement: { rotation: 1, position: { x: 1,  y: 0 } } },
+            { pattern: 'crccr', placement: { rotation: 2, position: { x: -1, y: 0 } } },
+            { pattern: 'crccr', placement: { rotation: 3, position: { x: -1, y: 1 } } },
         ]
 
         expect(getPlaceablePositions(map))

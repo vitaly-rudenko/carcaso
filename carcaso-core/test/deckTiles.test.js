@@ -1,11 +1,11 @@
 import { expect } from 'chai'
-import { parseTile, tiles } from '../src/tiles.js'
+import { parseDeckTile, deckTiles } from '../src/deckTiles.js'
 
-describe('tiles', () => {
-    describe('parseTile()', () => {
+describe('[deckTiles]', () => {
+    describe('parseDeckTile()', () => {
         it('should parse simple tiles', () => {
             expect(
-                parseTile(`
+                parseDeckTile(`
                     _f_
                     fff x1
                     _f_
@@ -16,7 +16,7 @@ describe('tiles', () => {
             })
 
             expect(
-                parseTile(`
+                parseDeckTile(`
                     _f_
                     fmf x2
                     _f_
@@ -29,7 +29,7 @@ describe('tiles', () => {
 
         it('should parse complex tiles', () => {
             expect(
-                parseTile(`
+                parseDeckTile(`
                     _w_
                     rrw x5
                     _r_
@@ -40,7 +40,7 @@ describe('tiles', () => {
             })
 
             expect(
-                parseTile(`
+                parseDeckTile(`
                     _c_
                     rac x9
                     _r_
@@ -53,10 +53,10 @@ describe('tiles', () => {
     })
 
     it('should contain valid tiles', () => {
-        expect(tiles.every(tile => Number.isInteger(tile.count) && tile.count > 0), 'valid count')
+        expect(deckTiles.every(tile => Number.isInteger(tile.count) && tile.count > 0), 'valid count')
             .to.be.true
         
-        expect(tiles.every(tile => typeof tile.pattern === 'string' && tile.pattern.length === 5), 'valid pattern')
+        expect(deckTiles.every(tile => typeof tile.pattern === 'string' && tile.pattern.length === 5), 'valid pattern')
             .to.be.true
     })
 
@@ -67,10 +67,10 @@ describe('tiles', () => {
                 .reduce((acc, curr) => acc + curr, 0)
         }
 
-        const withRiver = count(tiles.filter(tile => tile.pattern.includes('w')))
-        const withoutRiver = count(tiles.filter(tile => !tile.pattern.includes('w')))
-        const withCoatOfArms = count(tiles.filter(tile => tile.pattern.includes('a')))
-        const withMonasteries = count(tiles.filter(tile => tile.pattern.includes('m')))
+        const withRiver = count(deckTiles.filter(tile => tile.pattern.includes('w')))
+        const withoutRiver = count(deckTiles.filter(tile => !tile.pattern.includes('w')))
+        const withCoatOfArms = count(deckTiles.filter(tile => tile.pattern.includes('a')))
+        const withMonasteries = count(deckTiles.filter(tile => tile.pattern.includes('m')))
 
         expect(withoutRiver, 'without river').to.eq(72)
         expect(withRiver, 'with river').to.eq(12)
@@ -80,8 +80,8 @@ describe('tiles', () => {
 
     it('should contain unique tiles', () => {
         expect(
-            tiles.every(
-                (t1, i) => tiles.every(
+            deckTiles.every(
+                (t1, i) => deckTiles.every(
                     (t2, j) => i === j || t1.pattern !== t2.pattern
                 )
             )

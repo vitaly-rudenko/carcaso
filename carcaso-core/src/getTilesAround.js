@@ -1,4 +1,4 @@
-import { getPlacedTile } from './getPlacedTile.js'
+import { getTile } from './getTile.js'
 import { getPositionsAround } from './getPositionsAround.js'
 
 /**
@@ -13,7 +13,7 @@ import { getPositionsAround } from './getPositionsAround.js'
           bottomLeft, bottom, bottomRight ]
     ```
 */
-export function getPlacedTilesAround(placedTile, map, { includeCorners = false } = {}) {
-    const positions = getPositionsAround(placedTile.placement.position, { includeCorners })
-    return positions.map(position => getPlacedTile(map, position))
+export function getTilesAround(position, map, { includeCorners = false } = {}) {
+    const positions = getPositionsAround(position, { includeCorners })
+    return positions.map(position => getTile(map, position))
 }
