@@ -1,5 +1,4 @@
-import { Feature, isCityFeature, rotatePattern } from '@vitalyrudenko/carcaso-core'
-import { rotateMatrix } from '../utils/rotateMatrix.js'
+import { Feature, isCityFeature, rotateMatrix, rotatePattern } from '@vitalyrudenko/carcaso-core'
 import { VisualFeature } from './VisualFeature.js'
 
 export function getVisualPattern(pattern) {
