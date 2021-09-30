@@ -98,17 +98,25 @@ export function GamePage() {
     const lastClientPosition = useRef({ x: 0, y: 0 })
     const lastDistance = useRef(0)
     const isMultiTouch = useRef(false)
+    const mousePosition = useRef({ x: 0, y: 0 })
 
     const zoomIn = useCallback((increment) => {
-        setZoom(Math.max(20, Math.min(zoom + increment * 10, 200)))
-    }, [zoom])
+        const oldZoom = zoom
+        const newZoom = Math.max(20, Math.min(zoom + increment, 200))
+
+        setZoom(newZoom)
+        setPosition({
+            x: (position.x - mousePosition.current.x) * (newZoom / oldZoom) + mousePosition.current.x,
+            y: (position.y - mousePosition.current.y) * (newZoom / oldZoom) + mousePosition.current.y,
+        })
+    }, [zoom, position])
 
     useEffect(() => {
         const listener = (event) => {
             if (event.deltaY > 0) {
-                zoomIn(-1)
+                zoomIn(-15)
             } else {
-                zoomIn(1)
+                zoomIn(15)
             }
         }
 
@@ -148,7 +156,12 @@ export function GamePage() {
                     lastClientPosition.current.y = event.clientY
                 }}
                 onPointerMove={(event) => {
-                    if (isMultiTouch.current || !dragging.current) return
+                    if (isMultiTouch.current) return
+
+                    mousePosition.current.x = event.clientX
+                    mousePosition.current.y = event.clientY
+
+                    if (!dragging.current) return
 
                     isDisabled.current = true
                     setPosition({
@@ -175,6 +188,9 @@ export function GamePage() {
                 }}
                 onTouchMove={(event) => {
                     if (event.touches.length !== 1) {
+                        mousePosition.current.x = (event.touches.item(0).clientX + event.touches.item(1).clientX) / 2
+                        mousePosition.current.y = (event.touches.item(0).clientY + event.touches.item(1).clientY) / 2
+
                         isMultiTouch.current = true
                         isDisabled.current = true
                     } else {
@@ -187,19 +203,17 @@ export function GamePage() {
                         const distance = Math.sqrt((touch2.clientX - touch1.clientX) ** 2 + (touch2.clientY - touch1.clientY) ** 2)
 
                         if (lastDistance.current !== 0) {
-                            const last = Math.floor(lastDistance.current / 50)
-                            const curr = Math.floor(distance / 50)
+                            const last = lastDistance.current
+                            const curr = distance
+                            const diff = Math.floor((last - curr) / 10)
 
-                            if (curr > last) {
-                                zoomIn(1)
+                            if (Math.abs(diff) > 0) {
+                                zoomIn(-2 * diff)
+                                lastDistance.current = distance
                             }
-
-                            if (last > curr) {
-                                zoomIn(-1)
-                            }
+                        } else {
+                            lastDistance.current = distance
                         }
-
-                        lastDistance.current = distance
                     }
                 }}
                 onTouchEnd={() => {
