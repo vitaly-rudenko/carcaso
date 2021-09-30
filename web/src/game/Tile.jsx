@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useCallback, useRef } from 'react'
 import deepEqual from 'fast-deep-equal/react'
-import { rotatePattern, Feature } from '@vitalyrudenko/carcaso-core'
+import { rotatePattern, Feature, getPatternMatrix } from '@vitalyrudenko/carcaso-core'
 import { Container, Graphics } from '@inlet/react-pixi'
 import { VisualFeature } from './visual-features/VisualFeature.js'
 import { getVisualPattern } from './visual-features/getVisualPattern.js'
@@ -9,13 +9,20 @@ import { drawCoatOfArms } from './graphics/drawCoatOfArms.js'
 import { drawMonastery } from './graphics/drawMonastery.js'
 import { drawConnector } from './graphics/drawConnector.js'
 import { drawTown } from './graphics/drawTown.js'
+import { getFeatureBlobs } from './getFeatureBlobs.js'
+
+export const PreviewType = {
+    TILE: 'tile',
+    MEEPLE: 'meeple',
+}
 
 export const Tile = React.memo(({
     tile,
     zoom = 100,
-    preview = false,
+    previewType = null,
     corner = -1,
-    onSelect,
+    onTileSelect,
+    onMeepleSelect,
 }) => {
     const scale = zoom / 100
 
@@ -23,8 +30,8 @@ export const Tile = React.memo(({
 
     const rotatedPattern = rotatePattern(tile.pattern, tile.placement.rotation)
 
-    const innerOffsetX = (preview ? 3 : 0) * scale
-    const innerOffsetY = (preview ? 3 : 0) * scale
+    const innerOffsetX = (previewType === PreviewType.TILE ? 3 : 0) * scale
+    const innerOffsetY = (previewType === PreviewType.TILE ? 3 : 0) * scale
 
     const mapTileWidth = 48 * scale
     const mapTileHeight = 48 * scale
@@ -40,12 +47,30 @@ export const Tile = React.memo(({
     const offsetX = ((corner === 1 || corner === 2) ? tileWidth + innerOffsetX : 0) + innerOffsetX
     const offsetY = ((corner === 1 || corner === 3) ? tileHeight + innerOffsetY : 0) + innerOffsetY
 
-    return <Container sortableChildren interactive={preview} buttonMode={preview} pointerup={onSelect}>
+    const graphics = useRef(null)
+
+    const onClick = useCallback((event) => {
+        if (previewType === PreviewType.TILE && onTileSelect) {
+            onTileSelect()
+        }
+
+        if (previewType === PreviewType.MEEPLE && onMeepleSelect) {
+            const local = graphics.current.toLocal(event.data.global)
+
+            onMeepleSelect({
+                x: Math.floor(local.x / featureWidth),
+                y: Math.floor(local.y / featureHeight),
+            })
+        }
+    }, [previewType, onTileSelect, onMeepleSelect, featureWidth, featureHeight])
+
+    return <Container sortableChildren interactive={previewType} buttonMode={previewType} pointerup={onClick}>
         <Graphics
             zIndex={1}
+            ref={graphics}
             x={x * mapTileWidth + offsetX}
             y={-y * mapTileHeight + offsetY}
-            alpha={preview ? 0.75 : 1}
+            alpha={previewType === PreviewType.TILE ? 0.75 : 1}
             draw={g => {
                 g.clear()
 
@@ -88,7 +113,47 @@ export const Tile = React.memo(({
                     }
                 }
 
-                if (!preview) {
+                // meeple
+                if (previewType === PreviewType.MEEPLE) {
+                    const matrix = getPatternMatrix(rotatePattern(tile.pattern, tile.placement.rotation))
+                    for (const [y, row] of matrix.entries()) {
+                        for (const [x, feature] of row.entries()) {
+                            if (feature === Feature.BORDER) {
+                                continue
+                            }
+    
+                            g.beginFill(getVisualFeatureColor(feature))
+                            g.drawRect(x * featureWidth, y * featureHeight, featureWidth, featureHeight)
+                            g.endFill()
+                        }
+                    }
+    
+                    const blobs = getFeatureBlobs(matrix)
+                    for (const { feature, blob } of blobs) {
+                        if (![Feature.CITY, Feature.MONASTERY, Feature.ROAD, Feature.FIELD].includes(feature)) {
+                            continue
+                        }
+    
+                        const centerX = blob.reduce((sum, b) => sum + b[0], 0) / blob.length
+                        const centerY = blob.reduce((sum, b) => sum + b[1], 0) / blob.length
+    
+                        let [x, y] = [centerX, centerY]
+                        if (matrix[Math.round(y)]?.[Math.round(x)] !== feature) {
+                            const distances = blob
+                                .map(([x, y], i) => [i, Math.sqrt((centerX - x) ** 2 + (centerY - y) ** 2)])
+                                .sort((a, b) => a[1] - b[1])
+        
+                            ;([x, y] = blob[distances[0][0]])
+                        }
+    
+                        g.beginFill(0x000000, 0.5)
+                        g.drawCircle(x * featureWidth + featureWidth / 2, y * featureHeight + featureHeight / 2, featureWidth / 3)
+                        g.endFill()
+                    }
+                }
+
+                // grid
+                if (!previewType) {
                     g.beginFill(0x000000, scale * 0.1)
                     g.drawRect(0, 0, tileWidth, tileHeight)
                     g.endFill()

@@ -2,6 +2,7 @@ import { VisualFeature } from './VisualFeature.js'
 
 export function getVisualFeatureColor(feature) {
     switch (feature) {
+        case VisualFeature.BORDER:
         case VisualFeature.CONNECTOR: return 0x9e9990
         case VisualFeature.CITY: return 0xd9be68
         case VisualFeature.COAT_OF_ARMS: return 0x565B96

@@ -2,9 +2,9 @@ import React, { useMemo } from 'react'
 import deepEqual from 'fast-deep-equal/react'
 import { Container } from '@inlet/react-pixi'
 import { findPatternPlacements } from '@vitalyrudenko/carcaso-core'
-import { Tile } from './Tile.jsx'
+import { PreviewType, Tile } from './Tile.jsx'
 
-export const Map = React.memo(({ map, zoom, patternToPlace = null, onSelectPlacement }) => {
+export const Map = React.memo(({ map, zoom, patternToPlace = null, tileToPlaceMeeple = null, onSelectTilePlacement, onSelectMeepleLocation }) => {
     const possiblePlacements = useMemo(() => patternToPlace ? findPatternPlacements(patternToPlace, map) : [], [map, patternToPlace])
 
     const corneredPossiblePlacements = useMemo(() => {
@@ -31,17 +31,22 @@ export const Map = React.memo(({ map, zoom, patternToPlace = null, onSelectPlace
         {map.map(tile => (
             <Tile
                 key={getTileKey(tile)}
+                // previewType={tileToPlaceMeeple === tile ? PreviewType.MEEPLE : null}
+                previewType={PreviewType.MEEPLE}
                 tile={tile}
                 zoom={zoom}
+                onMeepleSelect={(location) => onSelectMeepleLocation(location)}
             />
         ))}
         {corneredPossiblePlacements.map(([corner, placement]) => {
             const tile = { pattern: patternToPlace, placement }
-            return <Tile preview corner={corner}
+            return <Tile
                 key={getTileKey(tile)}
+                previewType={PreviewType.TILE}
+                corner={corner}
                 tile={tile}
                 zoom={zoom}
-                onSelect={() => onSelectPlacement(placement)}
+                onTileSelect={() => onSelectTilePlacement(placement)}
             />
         })}
     </Container>

@@ -125,12 +125,16 @@ export function GamePage() {
         return () => window.removeEventListener('resize', listener)
     }, [])
 
-    const handleSelectPlacement = useCallback((placement) => {
+    const handleSelectTilePlacement = useCallback((placement) => {
         if (isDisabled.current) return
 
         const tile = { pattern: patternToPlace, placement }
         setMap([...map, tile])
     }, [isDisabled, map])
+
+    const handleSelectMeepleLocation = useCallback((location) => {
+        console.log('meeple location:', location)
+    }, [])
 
     return (
         <div id="game-page" className="page">
@@ -209,7 +213,8 @@ export function GamePage() {
                         map={map}
                         zoom={zoom}
                         tileToPlace={patternToPlace}
-                        onSelectPlacement={handleSelectPlacement}
+                        onSelectTilePlacement={handleSelectTilePlacement}
+                        onSelectMeepleLocation={handleSelectMeepleLocation}
                     />
                 </Container>
             </Stage>
