@@ -68,34 +68,22 @@ function generateRandomMap(iterations = 10) {
     return map
 }
 
-const initialMap = generateRandomMap(5) || [
+const initialMap = /* generateRandomMap(5) ||  */[
     ...tiles.map((tile, i) => ({
-        tile, placement: { position: { x: i, y: 0 }, rotation: 0 }
+        tile, placement: { position: { x: i * 2, y: 0 }, rotation: 0 }
     })),
     ...tiles.map((tile, i) => ({
-        tile, placement: { position: { x: i, y: 1 }, rotation: 1 }
+        tile, placement: { position: { x: i * 2, y: 2 }, rotation: 1 }
     })),
     ...tiles.map((tile, i) => ({
-        tile, placement: { position: { x: i, y: 2 }, rotation: 2 }
+        tile, placement: { position: { x: i * 2, y: 4 }, rotation: 2 }
     })),
     ...tiles.map((tile, i) => ({
-        tile, placement: { position: { x: i, y: 3 }, rotation: 3 }
+        tile, placement: { position: { x: i * 2, y: 6 }, rotation: 3 }
     })),
-    // edge case 1
-    { tile: { pattern: 'fffff' }, placement: { position: { x: 1, y: 5 }, rotation: 0 } },
-    { tile: { pattern: 'cffff' }, placement: { position: { x: 0, y: 5 }, rotation: 0 } },
-    { tile: { pattern: 'fffcc' }, placement: { position: { x: 0, y: 6 }, rotation: 0 } },
-    { tile: { pattern: 'fffcc' }, placement: { position: { x: 1, y: 6 }, rotation: 2 } },
-    { tile: { pattern: 'ffffc' }, placement: { position: { x: 1, y: 7 }, rotation: 0 } },
-    { tile: { pattern: 'fffff' }, placement: { position: { x: 0, y: 7 }, rotation: 0 } },
-    // edge case 2
-    { tile: { pattern: 'fffff' }, placement: { position: { x: 3, y: 5 }, rotation: 0 } },
-    { tile: { pattern: 'fcfff' }, placement: { position: { x: 4, y: 5 }, rotation: 0 } },
-    { tile: { pattern: 'fffcf' }, placement: { position: { x: 3, y: 6 }, rotation: 0 } },
-    { tile: { pattern: 'fffff' }, placement: { position: { x: 4, y: 6 }, rotation: 0 } },
 ]
 
-const tileToPlace = randomItem(tiles)
+const tileToPlace = null // randomItem(tiles)
 
 export function GamePage() {
     const [map, setMap] = useState(initialMap)
