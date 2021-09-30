@@ -1,4 +1,4 @@
-export { deckTiles as tiles } from './src/deckTiles.js'
+export { deckTiles } from './src/deckTiles.js'
 export { Feature } from './src/Feature.js'
 export { findPatternPlacements } from './src/findPatternPlacements.js'
 export { getPatternMatrix } from './src/getPatternMatrix.js'
