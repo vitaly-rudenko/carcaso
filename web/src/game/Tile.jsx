@@ -1,7 +1,8 @@
 import React, { useCallback, useRef } from 'react'
 import deepEqual from 'fast-deep-equal/react'
-import { rotatePattern, Feature, getPatternMatrix } from '@vitalyrudenko/carcaso-core'
 import { Container, Graphics } from '@inlet/react-pixi'
+import { filters } from 'pixi.js'
+import { rotatePattern, Feature, getPatternMatrix } from '@vitalyrudenko/carcaso-core'
 import { VisualFeature } from './visual-features/VisualFeature.js'
 import { getVisualPattern } from './visual-features/getVisualPattern.js'
 import { getVisualFeatureColor } from './visual-features/getVisualFeatureColor.js'
@@ -74,7 +75,7 @@ export const Tile = React.memo(({
             ref={graphics}
             x={x * mapTileWidth + offsetX}
             y={-y * mapTileHeight + offsetY}
-            alpha={previewType === PreviewType.TILE ? 0.75 : 1}
+            filters={[new filters.AlphaFilter(previewType === PreviewType.TILE ? 0.75 : 1)]}
             draw={g => {
                 g.clear()
 
