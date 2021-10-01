@@ -4,7 +4,7 @@ import { Container } from '@inlet/react-pixi'
 import { findPatternPlacements } from '@vitalyrudenko/carcaso-core'
 import { PreviewType, Tile } from './Tile.jsx'
 
-export const Map = React.memo(({ map, zoom, patternToPlace = null, tileToPlaceMeeple = null, onTileSelect, onMeepleLocationSelect }) => {
+export const Map = React.memo(({ map, patternToPlace = null, tileToPlaceMeeple = null, onTileSelect, onMeepleLocationSelect }) => {
     const possiblePlacements = useMemo(() => patternToPlace ? findPatternPlacements(patternToPlace, map) : [], [map, patternToPlace])
 
     const corneredPossiblePlacements = useMemo(() => {
@@ -33,7 +33,6 @@ export const Map = React.memo(({ map, zoom, patternToPlace = null, tileToPlaceMe
                 key={getTileKey(tile)}
                 previewType={tileToPlaceMeeple === tile ? PreviewType.MEEPLE : null}
                 tile={tile}
-                zoom={zoom}
                 onMeepleLocationSelect={onMeepleLocationSelect}
             />
         ))}
@@ -44,7 +43,6 @@ export const Map = React.memo(({ map, zoom, patternToPlace = null, tileToPlaceMe
                 previewType={PreviewType.TILE}
                 corner={corner}
                 tile={tile}
-                zoom={zoom}
                 onTileSelect={onTileSelect}
             />
         })}

@@ -155,7 +155,7 @@ export function GamePage() {
     return (
         <div id="game-page" className="page">
             <Stage width={width} height={height}
-                options={{ backgroundColor: 0x7f8778, resolution: 2, antialias: true }}
+                options={{ backgroundColor: 0x7f8778 }}
                 onPointerDown={(event) => {
                     dragging.current = true
                     isDisabled.current = false
@@ -217,7 +217,7 @@ export function GamePage() {
                             const diff = Math.floor((last - curr) / 10)
 
                             if (Math.abs(diff) > 0) {
-                                zoomIn(-2 * diff)
+                                zoomIn(diff > 0 ? -3 * diff : -2 * diff)
                                 lastDistance.current = distance
                             }
                         } else {
@@ -231,10 +231,9 @@ export function GamePage() {
                     isDisabled.current = false
                 }}
                 >
-                <Container x={position.x} y={position.y} anchor={0.5}>
+                <Container anchor={0.5} x={position.x} y={position.y} scale={position.zoom / 100}>
                     <Map
                         map={map}
-                        zoom={position.zoom}
                         patternToPlace={patternToPlace}
                         tileToPlaceMeeple={tileToPlaceMeeple}
                         onTileSelect={handleTileSelect}

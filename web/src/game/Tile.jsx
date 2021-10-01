@@ -1,7 +1,6 @@
 import React, { useCallback, useRef } from 'react'
 import deepEqual from 'fast-deep-equal/react'
 import { Container, Graphics } from '@inlet/react-pixi'
-import { filters } from 'pixi.js'
 import { rotatePattern, Feature, getPatternMatrix } from '@vitalyrudenko/carcaso-core'
 import { VisualFeature } from './visual-features/VisualFeature.js'
 import { getVisualPattern } from './visual-features/getVisualPattern.js'
@@ -20,25 +19,22 @@ export const PreviewType = {
 
 export const Tile = React.memo(({
     tile,
-    zoom = 100,
     previewType = null,
     corner = -1,
     onTileSelect,
     onMeepleLocationSelect,
 }) => {
-    const scale = zoom / 100
-
     const { x, y } = tile.placement.position
 
     const rotatedPattern = rotatePattern(tile.pattern, tile.placement.rotation)
     const visualPattern = getVisualPattern(rotatedPattern)
     const matrix = getPatternMatrix(rotatedPattern)
 
-    const innerOffsetX = (previewType === PreviewType.TILE ? 3 : 0) * scale
-    const innerOffsetY = (previewType === PreviewType.TILE ? 3 : 0) * scale
+    const innerOffsetX = (previewType === PreviewType.TILE ? 3 : 0)
+    const innerOffsetY = (previewType === PreviewType.TILE ? 3 : 0)
 
-    const mapTileWidth = 48 * scale
-    const mapTileHeight = 48 * scale
+    const mapTileWidth = 48
+    const mapTileHeight = 48
 
     const small = corner !== -1
 
@@ -75,7 +71,6 @@ export const Tile = React.memo(({
             ref={graphics}
             x={x * mapTileWidth + offsetX}
             y={-y * mapTileHeight + offsetY}
-            filters={[new filters.AlphaFilter(previewType === PreviewType.TILE ? 0.75 : 1)]}
             draw={g => {
                 g.clear()
 
@@ -105,7 +100,7 @@ export const Tile = React.memo(({
 
                 // grid
                 if (previewType !== PreviewType.TILE) {
-                    g.beginFill(0x000000, scale * 0.1)
+                    g.beginFill(0x000000, 0.1)
                     g.drawRect(0, 0, tileWidth, tileHeight)
                     g.endFill()
 
