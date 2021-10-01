@@ -91,18 +91,23 @@ export function GamePage() {
     const [map, setMap] = useState(initialMap)
 
     const dragging = useRef(false)
-    const isDisabled = useRef(false)
+    const isPointerDown = useRef(false)
+    const lastDraggedAt = useRef(Date.now())
     const [position, setPosition] = useState({ zoom: 100, x: window.innerWidth / 2, y: window.innerHeight / 2 })
     const [[width, height], setWidthHeight] = useState([window.innerWidth, window.innerHeight])
     const lastClientPosition = useRef({ x: 0, y: 0 })
-    const lastDistance = useRef(0)
+    const lastMultiTouchDistance = useRef(0)
     const isMultiTouch = useRef(false)
     const mousePosition = useRef({ x: 0, y: 0 })
     const [tileToPlaceMeeple, setTileToPlaceMeeple] = useState(null)
 
+    function isDisabled() {
+        return (Date.now() - lastDraggedAt.current) < 100 || dragging.current || isMultiTouch.current
+    }
+
     const zoomIn = useCallback((increment) => {
         const oldZoom = position.zoom
-        const newZoom = Math.max(20, Math.min(position.zoom + increment, 200))
+        const newZoom = Math.max(10, Math.min(position.zoom + increment, 400))
 
         setPosition({
             zoom: newZoom,
@@ -134,18 +139,18 @@ export function GamePage() {
     }, [])
 
     const handleTileSelect = useCallback((tile) => {
-        if (isDisabled.current) return
+        if (isDisabled()) return
 
         setMap([...map, tile])
         setTileToPlaceMeeple(tile)
-    }, [isDisabled, map])
+    }, [map])
 
-    const handleMeepleLocationSelect = useCallback((tile, location) => {
-        if (isDisabled.current) return
+    const handleMeeplePositionSelect = useCallback((tile, position) => {
+        if (isDisabled()) return
 
         tile.meeple = {
             owner: randomItem(['red', 'green', 'blue', 'yellow', 'black']),
-            location,
+            position,
         }
 
         setMap([...map])
@@ -155,11 +160,9 @@ export function GamePage() {
     return (
         <div id="game-page" className="page">
             <Stage width={width} height={height}
-                options={{ backgroundColor: 0x7f8778 }}
+                options={{ backgroundColor: 0x7f8778, antialias: true, autoDensity: true }}
                 onPointerDown={(event) => {
-                    dragging.current = true
-                    isDisabled.current = false
-
+                    isPointerDown.current = true
                     lastClientPosition.current.x = event.clientX
                     lastClientPosition.current.y = event.clientY
                 }}
@@ -169,9 +172,16 @@ export function GamePage() {
                     mousePosition.current.x = event.clientX
                     mousePosition.current.y = event.clientY
 
-                    if (!dragging.current) return
+                    if (!isPointerDown.current) return
+                    if (!dragging.current) {
+                        const distance = Math.sqrt((event.clientX - lastClientPosition.current.x) ** 2 + (event.clientY - lastClientPosition.current.y) ** 2)
+                        if (distance > 25) {
+                            dragging.current = true
+                        } else {
+                            return
+                        }
+                    }
 
-                    isDisabled.current = true
                     setPosition({
                         zoom: position.zoom,
                         x: Math.trunc(position.x + event.clientX - lastClientPosition.current.x),
@@ -182,15 +192,18 @@ export function GamePage() {
                     lastClientPosition.current.y = event.clientY
                 }}
                 onPointerUp={() => {
+                    if (dragging.current) {
+                        lastDraggedAt.current = Date.now()
+                    }
+
                     dragging.current = false
-                    isDisabled.current = false
+                    isPointerDown.current = false
                 }}
                 onTouchStart={(event) => {
-                    lastDistance.current = 0
+                    lastMultiTouchDistance.current = 0
                     
                     if (event.touches.length !== 1) {
                         isMultiTouch.current = true
-                        isDisabled.current = true
                     } else {
                         isMultiTouch.current = false
                     }
@@ -201,7 +214,6 @@ export function GamePage() {
                         mousePosition.current.y = (event.touches.item(0).clientY + event.touches.item(1).clientY) / 2
 
                         isMultiTouch.current = true
-                        isDisabled.current = true
                     } else {
                         isMultiTouch.current = false
                     }
@@ -211,24 +223,23 @@ export function GamePage() {
                         const touch2 = event.touches.item(1)
                         const distance = Math.sqrt((touch2.clientX - touch1.clientX) ** 2 + (touch2.clientY - touch1.clientY) ** 2)
 
-                        if (lastDistance.current !== 0) {
-                            const last = lastDistance.current
+                        if (lastMultiTouchDistance.current !== 0) {
+                            const last = lastMultiTouchDistance.current
                             const curr = distance
-                            const diff = Math.floor((last - curr) / 10)
+                            const diff = Math.floor(last - curr)
 
                             if (Math.abs(diff) > 0) {
-                                zoomIn(diff > 0 ? -3 * diff : -2 * diff)
-                                lastDistance.current = distance
+                                zoomIn(-(position.zoom / 100) * diff * 0.5)
+                                lastMultiTouchDistance.current = distance
                             }
                         } else {
-                            lastDistance.current = distance
+                            lastMultiTouchDistance.current = distance
                         }
                     }
                 }}
                 onTouchEnd={() => {
-                    lastDistance.current = 0
+                    lastMultiTouchDistance.current = 0
                     isMultiTouch.current = false
-                    isDisabled.current = false
                 }}
                 >
                 <Container anchor={0.5} x={position.x} y={position.y} scale={position.zoom / 100}>
@@ -237,7 +248,7 @@ export function GamePage() {
                         patternToPlace={patternToPlace}
                         tileToPlaceMeeple={tileToPlaceMeeple}
                         onTileSelect={handleTileSelect}
-                        onMeepleLocationSelect={handleMeepleLocationSelect}
+                        onMeeplePositionSelect={handleMeeplePositionSelect}
                     />
                 </Container>
             </Stage>

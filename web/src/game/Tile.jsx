@@ -11,6 +11,8 @@ import { drawConnector } from './graphics/drawConnector.js'
 import { drawTown } from './graphics/drawTown.js'
 import { getFeatureBlobs } from './getFeatureBlobs.js'
 import { drawMeeple } from './graphics/drawMeeple.js'
+import { getMatrixItemsAround } from './getMatrixItemsAround.js'
+import { isMeeplePlaceableFeature } from './isMeeplePlaceableFeature.js'
 
 export const PreviewType = {
     TILE: 'tile',
@@ -22,7 +24,7 @@ export const Tile = React.memo(({
     previewType = null,
     corner = -1,
     onTileSelect,
-    onMeepleLocationSelect,
+    onMeeplePositionSelect,
 }) => {
     const { x, y } = tile.placement.position
 
@@ -54,16 +56,17 @@ export const Tile = React.memo(({
             onTileSelect(tile)
         }
 
-        if (previewType === PreviewType.MEEPLE && onMeepleLocationSelect) {
+        if (previewType === PreviewType.MEEPLE && onMeeplePositionSelect) {
             const local = graphics.current.toLocal(event.data.global)
             const x = Math.floor(local.x / featureWidth)
             const y = Math.floor(local.y / featureHeight)
+            const position = { x, y }
 
-            if (isValidMeepleLocation(matrix, visualPattern, x, y, matrix[y][x])) {
-                onMeepleLocationSelect(tile, { x, y })
+            if (isValidMeepleLocation(position, matrix, visualPattern, matrix[y][x])) {
+                onMeeplePositionSelect(tile, position)
             }
         }
-    }, [tile, previewType, onTileSelect, onMeepleLocationSelect, featureWidth, featureHeight, matrix, visualPattern])
+    }, [tile, previewType, onTileSelect, onMeeplePositionSelect, featureWidth, featureHeight, matrix, visualPattern])
 
     return <Container sortableChildren interactive={previewType} buttonMode={previewType} pointerup={onClick}>
         <Graphics
@@ -124,8 +127,8 @@ export const Tile = React.memo(({
 
                 // meeple
                 if (tile.meeple) {
-                    const { owner, location } = tile.meeple
-                    const { x, y } = getVisualMeepleLocation(matrix, location.x, location.y, visualPattern)
+                    const { owner, position } = tile.meeple
+                    const { x, y } = getVisualMeepleLocation(matrix, position.x, position.y, visualPattern)
                     drawMeeple(owner, g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
                 }
 
@@ -165,53 +168,44 @@ function getVisualMeepleLocations(matrix, visualPattern) {
 
 function getVisualMeepleLocation(matrix, x, y, visualPattern) {
     const blobs = getFeatureBlobs(matrix)
-    const blob = blobs.find(blob => blob.blob.some(([bx, by]) => bx === x && by === y))
+    const blob = blobs.find(blob => blob.positions.some(p => p.x === x && p.y === y))
 
     return getFeatureBlobMeepleLocation(blob, matrix, visualPattern)
 }
 
-function getFeatureBlobMeepleLocation({ blob, feature }, matrix, visualPattern) {
-    const filteredBlob = blob.filter(([x, y]) => isValidMeepleLocation(matrix, visualPattern, x, y, feature)).sort((a, b) => b[1] - a[1])
-    if (filteredBlob.length === 0) return null
+function getFeatureBlobMeepleLocation(blob, matrix, visualPattern) {
+    const { positions, feature } = blob
+    const validPositions = positions
+        .filter(position => isValidMeepleLocation(position, matrix, visualPattern, feature))
+        .sort((a, b) => b.y - a.y)
 
-    const centerX = filteredBlob.reduce((sum, b) => sum + b[0], 0) / filteredBlob.length
-    const centerY = filteredBlob.reduce((sum, b) => sum + b[1], 0) / filteredBlob.length
+    if (validPositions.length === 0) return null
 
-    let [x, y] = [centerX, centerY]
-    if (!isValidMeepleLocation(matrix, visualPattern, x, y, feature)) {
-        const distances = filteredBlob
-            .map(([x, y], i) => [i, Math.sqrt((centerX - x) ** 2 + (centerY - y) ** 2)])
-            .sort((a, b) => a[1] - b[1])
+    const centerX = validPositions.reduce((sum, p) => sum + p.x, 0) / validPositions.length
+    const centerY = validPositions.reduce((sum, p) => sum + p.y, 0) / validPositions.length
+    const centerLocation = { x: centerX, y: centerY }
 
-        ;([x, y] = filteredBlob[(distances[0])[0]])
+    if (!isValidMeepleLocation(centerLocation, matrix, visualPattern, feature)) {
+        const distances = validPositions
+            .map((p, i) => ({ index: i, distance: Math.sqrt((centerX - p.x) ** 2 + (centerY - p.y) ** 2) }))
+            .sort((a, b) => a.distance - b.distance)
+
+        return validPositions[(distances[0]).index]
     }
 
-    return { x, y }
+    return centerLocation
 }
 
-function isValidMeepleLocation(matrix, visualPattern, x, y, feature) {
-    if (!isValidMeepleFeature(feature)) return false
+function isValidMeepleLocation(location, matrix, visualPattern, feature) {
+    if (!isMeeplePlaceableFeature(feature)) return false
+    const { x, y } = location
 
     const px = Math.round(x)
     const py = Math.round(y)
 
     return matrix[py]?.[px] === feature
         && visualPattern[py]?.[px] === feature
-        && getItemsAround(visualPattern, px, py)
+        && getMatrixItemsAround(visualPattern, { x: px, y: py })
             .every(f => f !== Feature.TOWN && f !== Feature.COAT_OF_ARMS)
 }
 
-function isValidMeepleFeature(feature) {
-    return [Feature.CITY, Feature.MONASTERY, Feature.ROAD, Feature.FIELD].includes(feature)
-}
-
-function getItemsAround(matrix, x, y) {
-    return [
-        [x - 1, y],
-        [x + 1, y],
-        [x, y - 1],
-        [x, y + 1],
-    ]
-        .filter(([x, y]) => y >= 0 && y < matrix.length && x >= 0 && x < matrix[y].length)
-        .map(([x, y]) => matrix[y][x])
-}
