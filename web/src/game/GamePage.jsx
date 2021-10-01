@@ -92,7 +92,7 @@ export function GamePage() {
 
     const dragging = useRef(false)
     const isPointerDown = useRef(false)
-    const lastDraggedAt = useRef(Date.now())
+    const lastDisabledAt = useRef(Date.now())
     const [position, setPosition] = useState({ zoom: 100, x: window.innerWidth / 2, y: window.innerHeight / 2 })
     const [[width, height], setWidthHeight] = useState([window.innerWidth, window.innerHeight])
     const lastClientPosition = useRef({ x: 0, y: 0 })
@@ -102,7 +102,7 @@ export function GamePage() {
     const [tileToPlaceMeeple, setTileToPlaceMeeple] = useState(null)
 
     function isDisabled() {
-        return (Date.now() - lastDraggedAt.current) < 100 || dragging.current || isMultiTouch.current
+        return (Date.now() - lastDisabledAt.current) < 100 || dragging.current || isMultiTouch.current
     }
 
     const zoomIn = useCallback((increment) => {
@@ -193,7 +193,7 @@ export function GamePage() {
                 }}
                 onPointerUp={() => {
                     if (dragging.current) {
-                        lastDraggedAt.current = Date.now()
+                        lastDisabledAt.current = Date.now()
                     }
 
                     dragging.current = false
@@ -238,6 +238,10 @@ export function GamePage() {
                     }
                 }}
                 onTouchEnd={() => {
+                    if (isMultiTouch.current) {
+                        lastDisabledAt.current = Date.now()
+                    }
+
                     lastMultiTouchDistance.current = 0
                     isMultiTouch.current = false
                 }}
