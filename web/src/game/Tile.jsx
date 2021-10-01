@@ -10,6 +10,7 @@ import { drawMonastery } from './graphics/drawMonastery.js'
 import { drawConnector } from './graphics/drawConnector.js'
 import { drawTown } from './graphics/drawTown.js'
 import { getFeatureBlobs } from './getFeatureBlobs.js'
+import { drawMeeple } from './graphics/drawMeeple.js'
 
 export const PreviewType = {
     TILE: 'tile',
@@ -22,13 +23,15 @@ export const Tile = React.memo(({
     previewType = null,
     corner = -1,
     onTileSelect,
-    onMeepleSelect,
+    onMeepleLocationSelect,
 }) => {
     const scale = zoom / 100
 
     const { x, y } = tile.placement.position
 
     const rotatedPattern = rotatePattern(tile.pattern, tile.placement.rotation)
+    const visualPattern = getVisualPattern(rotatedPattern)
+    const matrix = getPatternMatrix(rotatedPattern)
 
     const innerOffsetX = (previewType === PreviewType.TILE ? 3 : 0) * scale
     const innerOffsetY = (previewType === PreviewType.TILE ? 3 : 0) * scale
@@ -51,18 +54,19 @@ export const Tile = React.memo(({
 
     const onClick = useCallback((event) => {
         if (previewType === PreviewType.TILE && onTileSelect) {
-            onTileSelect()
+            onTileSelect(tile)
         }
 
-        if (previewType === PreviewType.MEEPLE && onMeepleSelect) {
+        if (previewType === PreviewType.MEEPLE && onMeepleLocationSelect) {
             const local = graphics.current.toLocal(event.data.global)
+            const x = Math.floor(local.x / featureWidth)
+            const y = Math.floor(local.y / featureHeight)
 
-            onMeepleSelect({
-                x: Math.floor(local.x / featureWidth),
-                y: Math.floor(local.y / featureHeight),
-            })
+            if (isValidMeepleLocation(matrix, visualPattern, x, y, matrix[y][x])) {
+                onMeepleLocationSelect(tile, { x, y })
+            }
         }
-    }, [previewType, onTileSelect, onMeepleSelect, featureWidth, featureHeight])
+    }, [tile, previewType, onTileSelect, onMeepleLocationSelect, featureWidth, featureHeight, matrix, visualPattern])
 
     return <Container sortableChildren interactive={previewType} buttonMode={previewType} pointerup={onClick}>
         <Graphics
@@ -77,8 +81,6 @@ export const Tile = React.memo(({
                 g.beginFill(getVisualFeatureColor(Feature.FIELD))
                 g.drawRect(0, 0, tileWidth, tileHeight)
                 g.endFill()
-
-                const visualPattern = getVisualPattern(rotatedPattern)
 
                 // regular
                 for (const [y, row] of visualPattern.entries()) {
@@ -100,6 +102,17 @@ export const Tile = React.memo(({
                     }
                 }
 
+                // grid
+                if (previewType !== PreviewType.TILE) {
+                    g.beginFill(0x000000, scale * 0.1)
+                    g.drawRect(0, 0, tileWidth, tileHeight)
+                    g.endFill()
+
+                    g.beginHole()
+                    g.drawRect(1, 1, tileWidth - 1, tileHeight - 1)
+                    g.endHole()
+                }
+
                 // special
                 for (const [y, row] of visualPattern.entries()) {
                     for (const [x, feature] of row.entries()) {
@@ -114,55 +127,95 @@ export const Tile = React.memo(({
                 }
 
                 // meeple
+                if (tile.meeple) {
+                    const { owner, location } = tile.meeple
+                    const { x, y } = getVisualMeepleLocation(matrix, location.x, location.y, visualPattern)
+                    drawMeeple(owner, g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
+                }
+
+                // meeple preview
                 if (previewType === PreviewType.MEEPLE) {
-                    const matrix = getPatternMatrix(rotatePattern(tile.pattern, tile.placement.rotation))
                     for (const [y, row] of matrix.entries()) {
                         for (const [x, feature] of row.entries()) {
-                            if (feature === Feature.BORDER) {
-                                continue
-                            }
-    
-                            g.beginFill(getVisualFeatureColor(feature))
+                            g.beginFill(getVisualFeatureColor(feature), 0)
                             g.drawRect(x * featureWidth, y * featureHeight, featureWidth, featureHeight)
                             g.endFill()
                         }
                     }
     
-                    const blobs = getFeatureBlobs(matrix)
-                    for (const { feature, blob } of blobs) {
-                        if (![Feature.CITY, Feature.MONASTERY, Feature.ROAD, Feature.FIELD].includes(feature)) {
-                            continue
-                        }
-    
-                        const centerX = blob.reduce((sum, b) => sum + b[0], 0) / blob.length
-                        const centerY = blob.reduce((sum, b) => sum + b[1], 0) / blob.length
-    
-                        let [x, y] = [centerX, centerY]
-                        if (matrix[Math.round(y)]?.[Math.round(x)] !== feature) {
-                            const distances = blob
-                                .map(([x, y], i) => [i, Math.sqrt((centerX - x) ** 2 + (centerY - y) ** 2)])
-                                .sort((a, b) => a[1] - b[1])
-        
-                            ;([x, y] = blob[distances[0][0]])
-                        }
-    
-                        g.beginFill(0x000000, 0.5)
-                        g.drawCircle(x * featureWidth + featureWidth / 2, y * featureHeight + featureHeight / 2, featureWidth / 3)
-                        g.endFill()
+                    const meepleLocations = getVisualMeepleLocations(matrix, visualPattern)
+                    for (const { x, y } of meepleLocations) {
+                        drawMeeple(null, g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
                     }
-                }
-
-                // grid
-                if (!previewType) {
-                    g.beginFill(0x000000, scale * 0.1)
-                    g.drawRect(0, 0, tileWidth, tileHeight)
-                    g.endFill()
-
-                    g.beginHole()
-                    g.drawRect(1, 1, tileWidth - 1, tileHeight - 1)
-                    g.endHole()
                 }
             }}
         />
     </Container>
 }, deepEqual)
+
+function getVisualMeepleLocations(matrix, visualPattern) {
+    const locations = []
+    
+    const blobs = getFeatureBlobs(matrix)
+    for (const blob of blobs) {
+        const location = getFeatureBlobMeepleLocation(blob, matrix, visualPattern)
+        if (location) {
+            locations.push(location)
+        }
+    }
+
+    return locations
+}
+
+function getVisualMeepleLocation(matrix, x, y, visualPattern) {
+    const blobs = getFeatureBlobs(matrix)
+    const blob = blobs.find(blob => blob.blob.some(([bx, by]) => bx === x && by === y))
+
+    return getFeatureBlobMeepleLocation(blob, matrix, visualPattern)
+}
+
+function getFeatureBlobMeepleLocation({ blob, feature }, matrix, visualPattern) {
+    const filteredBlob = blob.filter(([x, y]) => isValidMeepleLocation(matrix, visualPattern, x, y, feature)).sort((a, b) => b[1] - a[1])
+    if (filteredBlob.length === 0) return null
+
+    const centerX = filteredBlob.reduce((sum, b) => sum + b[0], 0) / filteredBlob.length
+    const centerY = filteredBlob.reduce((sum, b) => sum + b[1], 0) / filteredBlob.length
+
+    let [x, y] = [centerX, centerY]
+    if (!isValidMeepleLocation(matrix, visualPattern, x, y, feature)) {
+        const distances = filteredBlob
+            .map(([x, y], i) => [i, Math.sqrt((centerX - x) ** 2 + (centerY - y) ** 2)])
+            .sort((a, b) => a[1] - b[1])
+
+        ;([x, y] = filteredBlob[(distances[0])[0]])
+    }
+
+    return { x, y }
+}
+
+function isValidMeepleLocation(matrix, visualPattern, x, y, feature) {
+    if (!isValidMeepleFeature(feature)) return false
+
+    const px = Math.round(x)
+    const py = Math.round(y)
+
+    return matrix[py]?.[px] === feature
+        && visualPattern[py]?.[px] === feature
+        && getItemsAround(visualPattern, px, py)
+            .every(f => f !== Feature.TOWN && f !== Feature.COAT_OF_ARMS)
+}
+
+function isValidMeepleFeature(feature) {
+    return [Feature.CITY, Feature.MONASTERY, Feature.ROAD, Feature.FIELD].includes(feature)
+}
+
+function getItemsAround(matrix, x, y) {
+    return [
+        [x - 1, y],
+        [x + 1, y],
+        [x, y - 1],
+        [x, y + 1],
+    ]
+        .filter(([x, y]) => y >= 0 && y < matrix.length && x >= 0 && x < matrix[y].length)
+        .map(([x, y]) => matrix[y][x])
+}

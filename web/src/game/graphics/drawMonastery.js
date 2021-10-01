@@ -8,11 +8,11 @@ export function drawMonastery(g, x, y, width, height) {
 
     g.beginFill(getVisualFeatureColor(Feature.MONASTERY))
     g.drawPolygon([
-        x - width * 0.5, y - height * 0.2,
-        x - width * 0.5, y + height * 1.2,
-        x + width + width * 0.5, y + height * 1.2,
-        x + width + width * 0.5, y - height * 0.2,
-        x + width * 0.5, y - height * 0.8,
+        x - width * 0.5, y - height * 0.3,
+        x - width * 0.5, y + height * 1.3,
+        x + width + width * 0.5, y + height * 1.3,
+        x + width + width * 0.5, y - height * 0.3,
+        x + width * 0.5, y - height * 0.75,
     ])
     g.endFill()
 }

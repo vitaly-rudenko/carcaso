@@ -1,3 +1,5 @@
+import { Feature, isCityFeature } from '@vitalyrudenko/carcaso-core'
+
 export function getFeatureBlobs(matrix) {
     const blobs = []
     const checked = {}
@@ -27,13 +29,14 @@ export function getFeatureBlobs(matrix) {
         if (isChecked(x, y)) return []
         check(x, y)
 
-        const feature = matrix[y][x]
+        const feature = isCityFeature(matrix[y][x]) ? Feature.CITY : matrix[y][x]
         const blob = [[x, y]]
         const uncheckedLocationsAround = getUncheckedLocationsAround(x, y)
 
         for (const [x, y] of uncheckedLocationsAround) {
-            if (matrix[y][x] !== feature) continue
-            blob.push(...getBlob(x, y))
+            if (matrix[y][x] === feature || (isCityFeature(matrix[y][x]) && isCityFeature(feature))) {
+                blob.push(...getBlob(x, y))
+            }
         }
 
         return blob

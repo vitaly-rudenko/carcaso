@@ -79,37 +79,37 @@ const initialMap = [
             pattern: deckTile.pattern,
             placement: {
                 position: { x: (i % 19) - 9, y: -11 - rotation - 4 * Math.floor(i / 19) },
-                rotation
-            }
+                rotation,
+            },
         }))
     )),
 ]
 
-const patternToPlace = null // randomItem(deckTiles).pattern
+const patternToPlace = randomItem(deckTiles).pattern
 
 export function GamePage() {
     const [map, setMap] = useState(initialMap)
 
     const dragging = useRef(false)
     const isDisabled = useRef(false)
-    const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
-    const [zoom, setZoom] = useState(100)
+    const [position, setPosition] = useState({ zoom: 100, x: window.innerWidth / 2, y: window.innerHeight / 2 })
     const [[width, height], setWidthHeight] = useState([window.innerWidth, window.innerHeight])
     const lastClientPosition = useRef({ x: 0, y: 0 })
     const lastDistance = useRef(0)
     const isMultiTouch = useRef(false)
     const mousePosition = useRef({ x: 0, y: 0 })
+    const [tileToPlaceMeeple, setTileToPlaceMeeple] = useState(null)
 
     const zoomIn = useCallback((increment) => {
-        const oldZoom = zoom
-        const newZoom = Math.max(20, Math.min(zoom + increment, 200))
+        const oldZoom = position.zoom
+        const newZoom = Math.max(20, Math.min(position.zoom + increment, 200))
 
-        setZoom(newZoom)
         setPosition({
+            zoom: newZoom,
             x: (position.x - mousePosition.current.x) * (newZoom / oldZoom) + mousePosition.current.x,
             y: (position.y - mousePosition.current.y) * (newZoom / oldZoom) + mousePosition.current.y,
         })
-    }, [zoom, position])
+    }, [position])
 
     useEffect(() => {
         const listener = (event) => {
@@ -133,16 +133,24 @@ export function GamePage() {
         return () => window.removeEventListener('resize', listener)
     }, [])
 
-    const handleSelectTilePlacement = useCallback((placement) => {
+    const handleTileSelect = useCallback((tile) => {
         if (isDisabled.current) return
 
-        const tile = { pattern: patternToPlace, placement }
         setMap([...map, tile])
+        setTileToPlaceMeeple(tile)
     }, [isDisabled, map])
 
-    const handleSelectMeepleLocation = useCallback((location) => {
-        console.log('meeple location:', location)
-    }, [])
+    const handleMeepleLocationSelect = useCallback((tile, location) => {
+        if (isDisabled.current) return
+
+        tile.meeple = {
+            owner: randomItem(['red', 'green', 'blue', 'yellow', 'black']),
+            location,
+        }
+
+        setMap([...map])
+        setTileToPlaceMeeple(null)
+    }, [map])
 
     return (
         <div id="game-page" className="page">
@@ -165,6 +173,7 @@ export function GamePage() {
 
                     isDisabled.current = true
                     setPosition({
+                        zoom: position.zoom,
                         x: Math.trunc(position.x + event.clientX - lastClientPosition.current.x),
                         y: Math.trunc(position.y + event.clientY - lastClientPosition.current.y),
                     })
@@ -225,10 +234,11 @@ export function GamePage() {
                 <Container x={position.x} y={position.y} anchor={0.5}>
                     <Map
                         map={map}
-                        zoom={zoom}
-                        tileToPlace={patternToPlace}
-                        onSelectTilePlacement={handleSelectTilePlacement}
-                        onSelectMeepleLocation={handleSelectMeepleLocation}
+                        zoom={position.zoom}
+                        patternToPlace={patternToPlace}
+                        tileToPlaceMeeple={tileToPlaceMeeple}
+                        onTileSelect={handleTileSelect}
+                        onMeepleLocationSelect={handleMeepleLocationSelect}
                     />
                 </Container>
             </Stage>

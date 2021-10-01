@@ -14,9 +14,9 @@ describe('getPatternMatrix()', () => {
 
         expect(stringify(getPatternMatrix('ffmff'))).to.eq(stripIndent`
             fffff
-            fffff
-            ffmff
-            fffff
+            fmmmf
+            fmmmf
+            fmmmf
             fffff
         `)
     })
@@ -24,17 +24,17 @@ describe('getPatternMatrix()', () => {
     it('should generate pattern matrix for river patterns', () => {
         expect(stringify(getPatternMatrix('ffwfw'))).to.eq(stripIndent`
             fffff
-            fffff
-            ffwff
-            ffwff
+            fwwwf
+            fwwwf
+            fwwwf
             ffwff
         `)
 
         expect(stringify(getPatternMatrix('fwmwf'))).to.eq(stripIndent`
             fffff
-            fffff
-            wwmww
-            fffff
+            fmmmf
+            wmmmw
+            fmmmf
             fffff
         `)
     })
@@ -92,8 +92,8 @@ describe('getPatternMatrix()', () => {
 
         expect(stringify(getPatternMatrix('ccaff'))).to.eq(stripIndent`
             ccccb
-            cffff
-            cffff
+            cccff
+            ccfff
             cffff
             bffff
         `)
@@ -135,8 +135,8 @@ describe('getPatternMatrix()', () => {
         expect(stringify(getPatternMatrix('rrccc'))).to.eq(stripIndent`
             frrfb
             rrffc
-            rfffc
-            ffffc
+            rffcc
+            ffccc
             bcccc
         `)
 

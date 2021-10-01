@@ -39,8 +39,15 @@ export function getPatternMatrix(pattern) {
             if (top === Feature.RIVER && isCityFeature(center)) {
                 matrix[1][2] = Feature.RIVER
             } else if (top === Feature.RIVER && center === Feature.RIVER) {
+                matrix[1][1] = Feature.RIVER
                 matrix[1][2] = Feature.RIVER
+                matrix[1][3] = Feature.RIVER
+                matrix[2][1] = Feature.RIVER
                 matrix[2][2] = Feature.RIVER
+                matrix[2][3] = Feature.RIVER
+                matrix[3][1] = Feature.RIVER
+                matrix[3][2] = Feature.RIVER
+                matrix[3][3] = Feature.RIVER
             }
         }
 
@@ -117,7 +124,10 @@ export function getPatternMatrix(pattern) {
                 matrix[0][3] = Feature.CITY
                 matrix[0][4] = Feature.BORDER
                 matrix[1][0] = Feature.CITY
+                matrix[1][1] = Feature.CITY
+                matrix[1][2] = Feature.CITY
                 matrix[2][0] = Feature.CITY
+                matrix[2][1] = Feature.CITY
                 matrix[2][2] = Feature.FIELD
                 matrix[3][0] = Feature.CITY
                 matrix[4][0] = Feature.BORDER
@@ -170,6 +180,18 @@ export function getPatternMatrix(pattern) {
         }
 
         matrix = rotateMatrix(matrix)
+    }
+
+    if (matrix[2][2] === Feature.MONASTERY) {
+        matrix[1][1] = Feature.MONASTERY
+        matrix[1][2] = Feature.MONASTERY
+        matrix[1][3] = Feature.MONASTERY
+        matrix[2][1] = Feature.MONASTERY
+        matrix[2][2] = Feature.MONASTERY
+        matrix[2][3] = Feature.MONASTERY
+        matrix[3][1] = Feature.MONASTERY
+        matrix[3][2] = Feature.MONASTERY
+        matrix[3][3] = Feature.MONASTERY
     }
 
     return matrix
