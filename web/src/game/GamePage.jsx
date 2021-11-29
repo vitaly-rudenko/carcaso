@@ -73,16 +73,15 @@ function generateRandomMap(iterations = 10) {
 }
 
 const initialMap = [
-    ...generateRandomMap(5),
-    ...Array.from(new Array(4), (_, i) => i).flatMap(rotation => (
-        deckTiles.map((deckTile, i) => ({
-            pattern: deckTile.pattern,
-            placement: {
-                position: { x: (i % 19) - 9, y: -11 - rotation - 4 * Math.floor(i / 19) },
-                rotation,
-            },
-        }))
-    )),
+    { pattern: 'cffcf', placement: { position: { x: -1, y: 1 },  rotation: 2 } },
+    { pattern: 'wfwwf', placement: { position: { x: 0,  y: 1 },  rotation: 0 } },
+    { pattern: 'rwrwr', placement: { position: { x: 1,  y: 1 },  rotation: 0 } },
+    { pattern: 'fcccf', placement: { position: { x: -1, y: 0 },  rotation: 1 } },
+    { pattern: 'ffmff', placement: { position: { x: 0,  y: 0 },  rotation: 0 } },
+    { pattern: 'frtrr', placement: { position: { x: 1,  y: 0 },  rotation: 3 } },
+    { pattern: 'cfacf', placement: { position: { x: -1, y: -1 }, rotation: 0 } },
+    { pattern: 'fcrrr', placement: { position: { x: 0,  y: -1 }, rotation: 0 } },
+    { pattern: 'rrrww', placement: { position: { x: 1,  y: -1 }, rotation: 0 } },
 ]
 
 const patternToPlace = randomItem(deckTiles).pattern
