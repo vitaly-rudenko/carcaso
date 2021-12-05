@@ -1,6 +1,9 @@
-import { expect } from 'chai'
+import chai, { expect } from 'chai'
+import deepEqualInAnyOrder from 'deep-equal-in-any-order'
 import { Feature } from '../src/Feature.js'
 import { getFeatureBlob } from '../src/getFeatureBlob.js'
+
+chai.use(deepEqualInAnyOrder)
 
 describe('getFeatureBlob()', () => {
     const map = [
@@ -17,7 +20,7 @@ describe('getFeatureBlob()', () => {
 
     it.only('should get a simple feature blob', () => {
         expect(getFeatureBlob({ x: 7, y: -3 }, map))
-            .to.deep.eq({
+            .to.deep.equalInAnyOrder({
                 feature: Feature.ROAD,
                 positions: [
                     { x: 7, y: -5 },

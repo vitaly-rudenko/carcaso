@@ -22,7 +22,6 @@ export function getFeatureBlob(globalPosition, map) {
     }
 
     let feature = matrix[featurePosition.y][featurePosition.x]
-    console.log('global:', globalPosition, '=> local:', { tilePosition, featurePosition }, '=> tile: ', tile, '=> matrix:', matrix, '=> feature:', feature)
     if (isCityFeature(feature)) {
         feature = Feature.CITY
     }
@@ -37,6 +36,8 @@ export function getFeatureBlob(globalPosition, map) {
         
         const { tilePosition, featurePosition } = globalToLocal(uncheckedPosition)
         const tile = getTile(map, tilePosition)
+        if (!tile) continue
+
         const matrix = getPatternMatrix(rotatePattern(tile.pattern, tile.placement.rotation))
         
         if (areFeaturesEqual(feature, matrix[featurePosition.y][featurePosition.x])) {
@@ -46,11 +47,6 @@ export function getFeatureBlob(globalPosition, map) {
     }
 
     return { feature, positions }
-}
-
-export function getFeature(globalPosition, map) {
-    const { tilePosition, featurePosition } = globalToLocal(globalPosition)
-    const matrix = getPatternMatrix()
 }
 
 export function globalToLocal(position) {
