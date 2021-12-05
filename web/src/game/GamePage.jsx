@@ -117,11 +117,7 @@ export function GamePage() {
 
     useEffect(() => {
         const listener = (event) => {
-            if (event.deltaY > 0) {
-                zoomIn(-15)
-            } else {
-                zoomIn(15)
-            }
+            zoomIn(-event.deltaY)
         }
 
         window.addEventListener('wheel', listener)
