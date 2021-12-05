@@ -2,6 +2,7 @@ import { areFeaturesEqual } from './areFeaturesEqual.js'
 import { Feature } from './Feature.js'
 import { getPatternMatrix } from './getPatternMatrix.js'
 import { getTile } from './getTile.js'
+import { globalToLocal } from './globalToLocal.js'
 import { isCityFeature } from './isCityFeature.js'
 import { rotatePattern } from './rotatePattern.js'
 
@@ -12,13 +13,13 @@ export function getFeatureBlob(globalPosition, map) {
     const matrix = getPatternMatrix(rotatePattern(tile.pattern, tile.placement.rotation))
 
     const checked = {}
-    function getUncheckedPositionsAround(position) {
+    function getPositionsAround(position) {
         return [
             { x: position.x - 1, y: position.y },
             { x: position.x + 1, y: position.y },
             { x: position.x, y: position.y - 1 },
             { x: position.x, y: position.y + 1 },
-        ].filter(p => !checked[p.x + ':' + p.y])
+        ]
     }
 
     let feature = matrix[featurePosition.y][featurePosition.x]
@@ -32,6 +33,8 @@ export function getFeatureBlob(globalPosition, map) {
     while (unchecked.length > 0) {
         const uncheckedPosition = unchecked.shift()
         const { x, y } = uncheckedPosition
+
+        if (checked[x + ':' + y]) continue
         checked[x + ':' + y] = true
         
         const { tilePosition, featurePosition } = globalToLocal(uncheckedPosition)
@@ -42,24 +45,9 @@ export function getFeatureBlob(globalPosition, map) {
         
         if (areFeaturesEqual(feature, matrix[featurePosition.y][featurePosition.x])) {
             positions.push(uncheckedPosition)
-            unchecked.push(...getUncheckedPositionsAround(uncheckedPosition))
+            unchecked.push(...getPositionsAround(uncheckedPosition))
         }
     }
 
     return { feature, positions }
-}
-
-export function globalToLocal(position) {
-    const tilePosition = {
-        x: Math.floor(position.x / 5),
-        y: Math.floor(position.y / 5),
-    }
-
-    return {
-        tilePosition,
-        featurePosition: {
-            x: position.x - tilePosition.x * 5,
-            y: position.y - tilePosition.y * 5,
-        }
-    }
 }
