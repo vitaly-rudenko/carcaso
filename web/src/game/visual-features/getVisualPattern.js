@@ -1,7 +1,11 @@
-import { Feature, isCityFeature, rotateMatrix, rotatePattern } from '@vitalyrudenko/carcaso-core'
+import { Feature, getPatternMatrix, isCityFeature, rotateMatrix, rotatePattern } from '@vitalyrudenko/carcaso-core'
 import { VisualFeature } from './VisualFeature.js'
 
-export function getVisualPattern(pattern) {
+export function getVisualPattern(pattern, { raw = false } = {}) {
+    if (raw) {
+        return getPatternMatrix(pattern)
+    }
+
     const hasCoatOfArms = pattern.includes(Feature.COAT_OF_ARMS)
 
     const base = [...pattern].every(isCityFeature) ? Feature.CITY : Feature.FIELD
