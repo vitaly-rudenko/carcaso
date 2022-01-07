@@ -1,12 +1,23 @@
 import { getTile } from './getTile.js' 
-import { getTilesAround } from './getTilesAround.js'
-import { arePositionsEqual } from './arePositionsEqual.js'
-import { getTileFeatureBlobs } from './getFeatureBlobs.js'
+import { getFeatureBlob } from './getFeatureBlob.js'
+import { globalToLocal } from './globalToLocal.js'
+import { getPatternMatrix } from './getPatternMatrix.js'
 
-export function isFeatureBlobOccupied(map, mapPosition, tilePosition) {
-    const tile = getTile(map, mapPosition)
-    const blobs = getTileFeatureBlobs(map)
-    const blob = blobs.find(blob => blob.positions.some(p => arePositionsEqual(p, tilePosition)))
+export function isFeatureBlobOccupied(globalPosition, map) {
+    const blob = getFeatureBlob(globalPosition, map)
 
-    const [top, left, _, right, bottom] = getTilesAround(mapPosition, map)
+    return blob.positions.some(position => {
+        const { tilePosition, featurePosition } = globalToLocal(position)
+        const tile = getTile(map, tilePosition)
+        const matrix = getPatternMatrix(tile.pattern)
+
+        if (!tile.meeple) return false
+
+        const meepleFeature = matrix[tile.meeple.position.y][tile.meeple.position.x]
+        const blobPositionFeature = matrix[featurePosition.y][featurePosition.x]
+
+        if (meepleFeature !== blobPositionFeature) return false
+
+        return true
+    })
 }
