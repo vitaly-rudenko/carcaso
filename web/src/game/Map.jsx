@@ -28,7 +28,7 @@ export const Map = React.memo(({ map, patternToPlace = null, tileToPlaceMeeple =
     }, [possiblePlacements])
 
     return <Container>
-        {[...map].sort((a, b) => b.placement.position.y - a.placement.position.y).map(tile => (
+        {[...map].sort((a, b) => a.placement.position.y - b.placement.position.y).map(tile => (
             <Tile
                 key={getTileKey(tile)}
                 previewType={tileToPlaceMeeple === tile ? PreviewType.MEEPLE : null}
