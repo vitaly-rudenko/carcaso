@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react'
 import deepEqual from 'fast-deep-equal/react'
-import { Container, Graphics } from '@inlet/react-pixi'
+import { TextStyle } from 'pixi.js'
+import { Container, Graphics, Text } from '@inlet/react-pixi'
 import { rotatePattern, Feature, getPatternMatrix } from '@vitalyrudenko/carcaso-core'
 import { VisualFeature } from './visual-features/VisualFeature.js'
 import { getVisualPattern } from './visual-features/getVisualPattern.js'
@@ -29,7 +30,7 @@ export const Tile = React.memo(({
     const { x, y } = tile.placement.position
 
     const rotatedPattern = rotatePattern(tile.pattern, tile.placement.rotation)
-    const visualPattern = getVisualPattern(rotatedPattern)
+    const visualPattern = getVisualPattern(rotatedPattern, { raw: true })
     const matrix = getPatternMatrix(rotatedPattern)
 
     const innerOffsetX = (previewType === PreviewType.TILE ? 3 : 0)
@@ -69,11 +70,36 @@ export const Tile = React.memo(({
     }, [tile, previewType, onTileSelect, onMeeplePositionSelect, featureWidth, featureHeight, matrix, visualPattern])
 
     return <Container sortableChildren interactive={previewType} buttonMode={previewType} pointerup={onClick}>
+        {!previewType && <Text
+            text={`${x},${y}`}
+            x={x * mapTileWidth + mapTileWidth / 2 + offsetX}
+            y={y * mapTileHeight + mapTileHeight / 2 + offsetY}
+            resolution={4}
+            style={new TextStyle({ fontSize: 20 })}
+            anchor={0.5}
+            zIndex={2}
+            alpha={0.25}
+        />}
+        {!previewType && Array.from(new Array(25), (_, i) => {
+            const fx = Math.floor(i / 5)
+            const fy = i % 5
+
+            return <Text
+                text={`${fx},${fy}\n${x*5+fx},${y*5+fy}`}
+                x={x * mapTileWidth + fx * featureWidth + featureWidth / 2 + offsetX}
+                y={y * mapTileHeight + fy * featureHeight + featureHeight / 2 + offsetY}
+                resolution={4}
+                style={new TextStyle({ fontSize: 2.5, align: 'center' })}
+                alpha={0.75}
+                anchor={0.5}
+                zIndex={2}
+            />
+        })}
         <Graphics
             zIndex={1}
             ref={graphics}
             x={x * mapTileWidth + offsetX}
-            y={-y * mapTileHeight + offsetY}
+            y={y * mapTileHeight + offsetY}
             draw={g => {
                 g.clear()
 
