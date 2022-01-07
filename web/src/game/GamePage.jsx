@@ -73,15 +73,17 @@ function generateRandomMap(iterations = 10) {
 }
 
 const initialMap = [
-    { pattern: 'cffcf', placement: { position: { x: -1, y: 1 },  rotation: 2 } },
-    { pattern: 'wfwwf', placement: { position: { x: 0,  y: 1 },  rotation: 0 } },
-    { pattern: 'rwrwr', placement: { position: { x: 1,  y: 1 },  rotation: 0 } },
+    { pattern: 'cffcf', placement: { position: { x: -1, y: -1 }, rotation: 2 } },
+    { pattern: 'wfwwf', placement: { position: { x: 0,  y: -1 }, rotation: 0 } },
+    { pattern: 'rwrwr', placement: { position: { x: 1,  y: -1 }, rotation: 0 } },
     { pattern: 'fcccf', placement: { position: { x: -1, y: 0 },  rotation: 1 } },
     { pattern: 'ffmff', placement: { position: { x: 0,  y: 0 },  rotation: 0 } },
     { pattern: 'frtrr', placement: { position: { x: 1,  y: 0 },  rotation: 3 } },
-    { pattern: 'cfacf', placement: { position: { x: -1, y: -1 }, rotation: 0 } },
-    { pattern: 'fcrrr', placement: { position: { x: 0,  y: -1 }, rotation: 0 } },
-    { pattern: 'rrrww', placement: { position: { x: 1,  y: -1 }, rotation: 0 } },
+    { pattern: 'cfacf', placement: { position: { x: -1, y: 1 },  rotation: 0 },
+        meeple: { owner: 'red', position: { x: 4, y: 2 } } },
+    { pattern: 'fcrrr', placement: { position: { x: 0,  y: 1 },  rotation: 0 } },
+    { pattern: 'rrrww', placement: { position: { x: 1,  y: 1 },  rotation: 0 },
+        meeple: { owner: 'green', position: { x: 1, y: 0 } } },
 ]
 
 const patternToPlace = randomItem(deckTiles).pattern
@@ -106,7 +108,7 @@ export function GamePage() {
 
     const zoomIn = useCallback((increment) => {
         const oldZoom = position.zoom
-        const newZoom = Math.max(10, Math.min(position.zoom + increment, 400))
+        const newZoom = Math.max(10, Math.min(position.zoom + increment, 500))
 
         setPosition({
             zoom: newZoom,
