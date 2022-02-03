@@ -157,7 +157,7 @@ export function GamePage() {
     return (
         <div id="game-page" className="page">
             <Stage width={width} height={height}
-                options={{ backgroundColor: 0x7f8778, antialias: true, autoDensity: true }}
+                options={{ backgroundColor: 0x7f8778 }}
                 onPointerDown={(event) => {
                     isPointerDown.current = true
                     lastClientPosition.current.x = event.clientX
