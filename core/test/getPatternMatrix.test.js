@@ -164,6 +164,40 @@ describe('getPatternMatrix()', () => {
             fwwff
         `)
     })
+
+    it('should cover edge cases', () => {
+        expect(stringify(getPatternMatrix('wwwff'))).to.eq(stripIndent`
+            fwwff
+            wwfff
+            wffff
+            fffff
+            fffff
+        `)
+
+        expect(stringify(getPatternMatrix('wfcff'))).to.eq(stripIndent`
+            ffwff
+            ffwff
+            ffcff
+            fffff
+            fffff
+        `)
+
+        expect(stringify(getPatternMatrix('rftfr'))).to.eq(stripIndent`
+            ffrff
+            ffrff
+            ffrff
+            ffrff
+            ffrff
+        `)
+
+        expect(stringify(getPatternMatrix('rfmff'))).to.eq(stripIndent`
+            ffrff
+            fmmmf
+            fmmmf
+            fmmmf
+            fffff
+        `)
+    })
 })
 
 function stringify(matrix) {

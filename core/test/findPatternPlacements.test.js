@@ -1,8 +1,6 @@
-import chai, { expect } from 'chai'
-import deepEqualInAnyOrder from 'deep-equal-in-any-order'
+import './setup.js'
+import { expect } from 'chai'
 import { findPatternPlacements } from '../src/findPatternPlacements.js'
-
-chai.use(deepEqualInAnyOrder)
 
 describe('findPatternPlacements()', () => {
     it('should return all possible placements for empty map (non-river tile)', () => {

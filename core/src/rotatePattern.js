@@ -21,8 +21,7 @@ export function rotatePattern(pattern, rotation) {
         case 0: return top    + left   + center + right  + bottom
         case 1: return left   + bottom + center + top    + right
         case 2: return bottom + right  + center + left   + top
-        case 3: return right  + top    + center + bottom + left
+        case 3:
+        default: return right  + top    + center + bottom + left
     }
-
-    throw new Error('Something went wrong')
 }

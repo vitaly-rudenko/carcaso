@@ -1,8 +1,6 @@
-import chai, { expect } from 'chai'
-import deepEqualInAnyOrder from 'deep-equal-in-any-order'
+import './setup.js'
+import { expect } from 'chai'
 import { getPlaceablePositions } from '../src/getPlaceablePositions.js'
-
-chai.use(deepEqualInAnyOrder)
 
 describe('getPlaceablePositions()', () => {
     it('should return free placements on empty map', () => {
