@@ -3,6 +3,13 @@ import { getPlaceablePositions } from './getPlaceablePositions.js'
 import { getTilesAround } from './getTilesAround.js'
 import { rotatePattern } from './rotatePattern.js'
 
+/**
+ * Find all possible placements of a pattern on a map.
+ * 
+ * @param {string} pattern Compact 5x1 string pattern like "ffmff"
+ * @param {import('./types').Map} map 
+ * @returns {import('./types').Placement[]}
+ */
 export function findPatternPlacements(pattern, map) {
     const positions = getPlaceablePositions(map)
     const placements = []
@@ -22,6 +29,14 @@ export function findPatternPlacements(pattern, map) {
     return placements
 }
 
+/**
+ * Check if pattern can be placed in a specified placement.
+ * 
+ * @param {string} pattern
+ * @param {import('./types').Placement} placement
+ * @param {import('./types').Map} map
+ * @returns {boolean}
+ */
 function canPatternBePlaced(pattern, placement, map) {
     const [top, left, _, right, bottom] = rotatePattern(pattern, placement.rotation)
     const [topTile, leftTile, rightTile, bottomTile] = getTilesAround(placement.position, map)

@@ -1,15 +1,18 @@
 /**
-    Result:  
-    ```
-        [ top, left, right, bottom ]  
-    ```
-    With corners:  
-    ```
-        [ topLeft,    top,    topRight,  
-          left,               right,  
-          bottomLeft, bottom, bottomRight ]
-    ```
-*/
+ * Get all positions around specified coordinates.
+ * 
+ * Result:  
+ * ```
+ *     [ top, left, right, bottom ]  
+ * ```
+ * With corners:  
+ * ```
+ *     [ topLeft,    top,    topRight,  
+ *       left,               right,  
+ *       bottomLeft, bottom, bottomRight ]
+ * ```
+ * @param {import('./types').Position} position
+ */
 export function getPositionsAround(position, { includeCorners = false } = {}) {
     const { x, y } = position
 

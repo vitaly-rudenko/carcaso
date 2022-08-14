@@ -1,4 +1,4 @@
-// cities x roads
+// <cities>x<roads>
 export const deckTiles = [
     // --- non-river tiles
     // 0x0
@@ -154,6 +154,10 @@ export const deckTiles = [
     _w_`,
 ].map(serialized => parseDeckTile(serialized))
 
+/**
+ * @param {string} serialized Readable string pattern like "_r_\nwrw\n_w_"
+ * @returns {{ pattern: string, count: number }} Compact 5x1 string pattern like "rwrww"
+ */
 export function parseDeckTile(serialized) {
     const rows = serialized
         .split('\n')

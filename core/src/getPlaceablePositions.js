@@ -1,6 +1,12 @@
 import { getTile } from './getTile.js'
 import { getPositionsAround } from './getPositionsAround.js'
 
+/**
+ * Get all placeable positions on a map.
+ * 
+ * @param {import('./types').Map} map 
+ * @returns {import('./types').Position[]}
+ */
 export function getPlaceablePositions(map) {
     if (map.length === 0) {
         return [{ x: 0, y: 0 }]

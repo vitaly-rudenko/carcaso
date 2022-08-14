@@ -1,3 +1,9 @@
+/**
+ * Rotate 5x5 pattern matrix clock-wise.
+ * 
+ * @param {import('./types').PatternMatrix} matrix
+ * @returns {import('./types').PatternMatrix}
+ */
 export function rotateMatrix(matrix) {
     const width = matrix[0].length
     const height = matrix.length

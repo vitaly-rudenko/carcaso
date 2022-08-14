@@ -19,10 +19,10 @@ describe('getTilesAround()', () => {
         expect(
             getTilesAround(position(center), emptyMap)
         ).to.deep.eq([
-            null, // top
-            null, // left
-            null, // right
-            null, // bottom
+            undefined, // top
+            undefined, // left
+            undefined, // right
+            undefined, // bottom
         ])
 
         expect(
@@ -31,21 +31,21 @@ describe('getTilesAround()', () => {
 
         expect(
             getTilesAround(position(bottomRight), completeMap)
-        ).to.deep.eq([right, bottom, null, null])
+        ).to.deep.eq([right, bottom, undefined, undefined])
     })
 
     it('should return positions around (including corners)', () => {
         expect(
             getTilesAround(position(center), emptyMap, { includeCorners: true })
         ).to.deep.eq([
-            null, // top left
-            null, // top
-            null, // top right
-            null, // left
-            null, // right
-            null, // bottom left
-            null, // bottom
-            null, // bottom right
+            undefined, // top left
+            undefined, // top
+            undefined, // top right
+            undefined, // left
+            undefined, // right
+            undefined, // bottom left
+            undefined, // bottom
+            undefined, // bottom right
         ])
 
         expect(
@@ -54,7 +54,7 @@ describe('getTilesAround()', () => {
 
         expect(
             getTilesAround(position(bottomRight), completeMap, { includeCorners: true })
-        ).to.deep.eq([center, right, null, bottom, null, null, null, null])
+        ).to.deep.eq([center, right, undefined, bottom, undefined, undefined, undefined, undefined])
     })
 })
 

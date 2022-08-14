@@ -3,6 +3,12 @@ import { isCityFeature } from './isCityFeature.js'
 import { rotateMatrix } from './rotateMatrix.js'
 import { rotatePattern } from './rotatePattern.js'
 
+/**
+ * Get a complete 5x5 matrix of pattern features.
+ * 
+ * @param {string} pattern Compact 5x1 string pattern like "ffmff"
+ * @returns {string[][]} Complete 5x5 array pattern like [['f', 'f', 'm', 'f', 'f'], ...]
+ */
 export function getPatternMatrix(pattern) {
     pattern = pattern.replace(Feature.COAT_OF_ARMS, Feature.CITY)
 
@@ -197,6 +203,7 @@ export function getPatternMatrix(pattern) {
     return matrix
 }
 
+/** @param {string} feature */
 function isRoadOrTown(feature) {
     return feature === Feature.ROAD || feature === Feature.TOWN
 }

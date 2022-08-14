@@ -1,3 +1,10 @@
+/**
+ * Rotate compact 5x1 string pattern.
+ * 
+ * @param {string} pattern
+ * @param {number} rotation
+ * @returns {string}
+ */
 export function rotatePattern(pattern, rotation) {
     const [top, left, center, right, bottom] = pattern
 
@@ -16,4 +23,6 @@ export function rotatePattern(pattern, rotation) {
         case 2: return bottom + right  + center + left   + top
         case 3: return right  + top    + center + bottom + left
     }
+
+    throw new Error('Something went wrong')
 }
