@@ -24,10 +24,13 @@
  * @property {Meeple} [meeple] 
  */
 
-/** @typedef {Tile[]} Map */
+/**
+ * @typedef FeatureBlob
+ * @property {string} feature
+ * @property {Position[]} positions
+ */
 
-/** @typedef {'f' | 'r' | 't' | 'c' | 'w' | 'm' | 'a' | 'b'} Feature */
-/** @typedef {[Feature, Feature, Feature, Feature, Feature]} PatternMatrixRow */
-/** @typedef {[PatternMatrixRow, PatternMatrixRow, PatternMatrixRow, PatternMatrixRow, PatternMatrixRow]} PatternMatrix */
+/** @typedef {Tile[]} Map */
+/** @typedef {string[][]} PatternMatrix */
 
 export const _ = {}
