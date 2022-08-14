@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from 'react'
 import deepEqual from 'fast-deep-equal/react'
 import { Container, Graphics } from '@inlet/react-pixi'
-import { rotatePattern, Feature, getPatternMatrix } from '@vitalyrudenko/carcaso-core'
+import { rotatePattern, Feature, getPatternMatrix, getFeatureBlobs, getMatrixItemsAround, isMeeplePlaceableFeature } from '@vitalyrudenko/carcaso-core'
 import { VisualFeature } from './visual-features/VisualFeature.js'
 import { getVisualPattern } from './visual-features/getVisualPattern.js'
 import { getVisualFeatureColor } from './visual-features/getVisualFeatureColor.js'
@@ -9,10 +9,7 @@ import { drawCoatOfArms } from './graphics/drawCoatOfArms.js'
 import { drawMonastery } from './graphics/drawMonastery.js'
 import { drawConnector } from './graphics/drawConnector.js'
 import { drawTown } from './graphics/drawTown.js'
-import { getFeatureBlobs } from './getFeatureBlobs.js'
 import { drawMeeple } from './graphics/drawMeeple.js'
-import { getMatrixItemsAround } from './getMatrixItemsAround.js'
-import { isMeeplePlaceableFeature } from './isMeeplePlaceableFeature.js'
 
 export const PreviewType = {
     TILE: 'tile',
