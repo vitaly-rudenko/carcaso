@@ -5,9 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha --recursive",
+    "test": "mocha --recursive --exit",
     "test:watch": "npm run test -- --watch --parallel",
     "test:watch:debug": "nodemon --exec 'npm run test || exit 1'",
+    "test:coverage": "c8 --all npm run test",
     "prepublishOnly": "npm test"
   },
   "repository": {
@@ -26,6 +27,7 @@
   },
   "homepage": "https://github.com/vitaly-rudenko/carcaso#readme",
   "devDependencies": {
+    "c8": "^7.12.0",
     "chai": "^4.3.4",
     "common-tags": "^1.8.0",
     "deep-equal-in-any-order": "^1.1.13",
