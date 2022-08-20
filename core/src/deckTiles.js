@@ -76,7 +76,7 @@ export const deckTiles = [
     // 1x2
     `
     _c_
-    rrr x4
+    rrr x3
     _f_`,
     `
     _c_

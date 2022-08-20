@@ -60,19 +60,21 @@ describe('[deckTiles]', () => {
             .to.be.true
     })
 
-    it('should contain 84 tiles in total', () => {
+    it('should contain correct amount of tiles', () => {
         function count(tiles) {
             return tiles
                 .map(tile => tile.count)
                 .reduce((acc, curr) => acc + curr, 0)
         }
 
+        const totalTiles = count(deckTiles)
         const withRiver = count(deckTiles.filter(tile => tile.pattern.includes('w')))
         const withoutRiver = count(deckTiles.filter(tile => !tile.pattern.includes('w')))
         const withCoatOfArms = count(deckTiles.filter(tile => tile.pattern.includes('a')))
         const withMonasteries = count(deckTiles.filter(tile => tile.pattern.includes('m')))
 
-        expect(withoutRiver, 'without river').to.eq(72)
+        expect(totalTiles).to.eq(83)
+        expect(withoutRiver, 'without river').to.eq(71)
         expect(withRiver, 'with river').to.eq(12)
         expect(withCoatOfArms, 'with coat of arms').to.eq(10)
         expect(withMonasteries, 'with monasteries').to.eq(7)
