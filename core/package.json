@@ -36,5 +36,9 @@
   },
   "files": [
     "src"
-  ]
+  ],
+  "dependencies": {
+    "clone-deep": "^4.0.1",
+    "merge-deep": "^3.0.3"
+  }
 }

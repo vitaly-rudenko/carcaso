@@ -125,23 +125,15 @@ export const Tile = React.memo(({
                 // meeple
                 if (tile.meeple) {
                     const { owner, position } = tile.meeple
-                    const { x, y } = getVisualMeepleLocation(matrix, position.x, position.y, visualPattern)
+                    const { position: { x, y } } = getVisualMeepleLocation(matrix, position.x, position.y, visualPattern)
                     drawMeeple(owner, g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
                 }
 
                 // meeple preview
                 if (previewType === PreviewType.MEEPLE) {
-                    for (const [y, row] of matrix.entries()) {
-                        for (const [x, feature] of row.entries()) {
-                            g.beginFill(getVisualFeatureColor(feature), 0)
-                            g.drawRect(x * featureWidth, y * featureHeight, featureWidth, featureHeight)
-                            g.endFill()
-                        }
-                    }
-    
                     const meepleLocations = getVisualMeepleLocations(matrix, visualPattern)
-                    for (const { x, y } of meepleLocations) {
-                        drawMeeple(null, g, x * featureWidth, y * featureHeight, featureWidth, featureHeight)
+                    for (const { feature, position: { x, y } } of meepleLocations) {
+                        drawMeeple(null, g, x * featureWidth, y * featureHeight, featureWidth, featureHeight, feature)
                     }
                 }
             }}
@@ -187,10 +179,10 @@ function getFeatureBlobMeepleLocation(blob, matrix, visualPattern) {
             .map((p, i) => ({ index: i, distance: Math.sqrt((centerX - p.x) ** 2 + (centerY - p.y) ** 2) }))
             .sort((a, b) => a.distance - b.distance)
 
-        return validPositions[(distances[0]).index]
+        return { feature, position: validPositions[(distances[0]).index] }
     }
 
-    return centerLocation
+    return { feature, position: centerLocation }
 }
 
 function isValidMeepleLocation(location, matrix, visualPattern, feature) {

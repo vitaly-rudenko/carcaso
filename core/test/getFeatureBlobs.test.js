@@ -12,8 +12,6 @@ describe('getFeatureBlobs()', () => {
       ['b', 'f', 'f', 'f', 'r'],
     ]
 
-    console.log(JSON.stringify(getFeatureBlobs(matrix)))
-
     expect(getFeatureBlobs(matrix)).to.deep.eq([
       { feature: 'r', positions: [{ x: 0, y: 0 }] },
       { feature: 'f', positions: [{ x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }] },
