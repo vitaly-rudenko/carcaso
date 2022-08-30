@@ -4,6 +4,7 @@ import { Container, Stage } from '@inlet/react-pixi'
 import { shuffleArray } from './utils/shuffleArray.js'
 import { randomItem } from './utils/randomItem.js'
 import { Map } from './Map.jsx'
+import { DEBUG_MAP } from '../tools/debug.js'
 import './GamePage.css'
 
 function generateMapWithRiver() {
@@ -72,18 +73,25 @@ function generateRandomMap(iterations = 10) {
     return map
 }
 
-const initialMap = [
-    ...generateRandomMap(5),
-    ...Array.from(new Array(4), (_, i) => i).flatMap(rotation => (
-        deckTiles.map((deckTile, i) => ({
-            pattern: deckTile.pattern,
-            placement: {
-                position: { x: (i % 19) - 9, y: -11 - rotation - 4 * Math.floor(i / 19) },
-                rotation,
-            },
-        }))
-    )),
-]
+const initialMap = DEBUG_MAP === 1 ? [
+    { pattern: 'ccacc', placement: { position: { x: -1, y: -1 },  rotation: 0 }, meeple: { owner: 'red', position: { x: 3, y: 3 } } },
+    { pattern: 'ccfff', placement: { position: { x: 0, y: -1 },   rotation: 0 }, meeple: { owner: 'green', position: { x: 2, y: 2 } } },
+    { pattern: 'rftrr', placement: { position: { x: 1, y: -1 },   rotation: 0 }, meeple: { owner: 'blue', position: { x: 2, y: 0 } } },
+    { pattern: 'cffff', placement: { position: { x: -1, y: 0 },  rotation: 0 } },
+    { pattern: 'fffff', placement: { position: { x: 0, y: 0 },   rotation: 0 } },
+    { pattern: 'frrrf', placement: { position: { x: 1, y: 0 },   rotation: 1 }, meeple: { owner: 'yellow', position: { x: 2, y: 2 } } },
+    { pattern: 'wfwfw', placement: { position: { x: -1, y: 1 }, rotation: 3 }, meeple: { owner: 'black', position: { x: 2, y: 3 } } },
+    { pattern: 'wwfff', placement: { position: { x: 0, y: 1 },  rotation: 3 } },
+    { pattern: 'rfmff', placement: { position: { x: 1, y: 1 },  rotation: 0 }, meeple: { owner: 'green', position: { x: 2, y: 2 } } },
+] : DEBUG_MAP === 2 ? Array.from(new Array(4), (_, i) => i).flatMap(rotation => (
+    deckTiles.map((deckTile, i) => ({
+        pattern: deckTile.pattern,
+        placement: {
+            position: { x: (i % 19), y: rotation + 4 * Math.floor(i / 19) },
+            rotation,
+        },
+    }))
+)) : DEBUG_MAP === 3 ? generateRandomMap(3) : []
 
 const patternToPlace = randomItem(deckTiles).pattern
 

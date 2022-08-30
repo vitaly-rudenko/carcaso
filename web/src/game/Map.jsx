@@ -3,6 +3,7 @@ import deepEqual from 'fast-deep-equal/react'
 import { Container } from '@inlet/react-pixi'
 import { findPatternPlacements } from '@vitalyrudenko/carcaso-core'
 import { PreviewType, Tile } from './Tile.jsx'
+import { DEBUG_MEEPLE } from '../tools/debug.js'
 
 export const Map = React.memo(({ map, patternToPlace = null, tileToPlaceMeeple = null, onTileSelect, onMeeplePositionSelect }) => {
     const possiblePlacements = useMemo(() => patternToPlace ? findPatternPlacements(patternToPlace, map) : [], [map, patternToPlace])
@@ -28,10 +29,14 @@ export const Map = React.memo(({ map, patternToPlace = null, tileToPlaceMeeple =
     }, [possiblePlacements])
 
     return <Container>
-        {[...map].sort((a, b) => b.placement.position.y - a.placement.position.y).map(tile => (
+        {[...map].sort((a, b) => a.placement.position.y - b.placement.position.y).map(tile => (
             <Tile
                 key={getTileKey(tile)}
-                previewType={tileToPlaceMeeple === tile ? PreviewType.MEEPLE : null}
+                previewType={
+                    DEBUG_MEEPLE ?
+                    (!tile.meeple && PreviewType.MEEPLE) :
+                    (tileToPlaceMeeple === tile ? PreviewType.MEEPLE : null)
+                }
                 tile={tile}
                 onMeeplePositionSelect={onMeeplePositionSelect}
             />
