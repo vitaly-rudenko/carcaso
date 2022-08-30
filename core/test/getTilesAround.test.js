@@ -2,15 +2,15 @@ import { expect } from 'chai'
 import { getTilesAround } from '../src/getTilesAround.js'
 
 describe('getTilesAround()', () => {
-    const topLeft = { placement: { position: { x: -1, y: 1 } } }
-    const top = { placement: { position: { x: 0, y: 1 } } }
-    const topRight = { placement: { position: { x: 1, y: 1 } } }
+    const topLeft = { placement: { position: { x: -1, y: -1 } } }
+    const top = { placement: { position: { x: 0, y: -1 } } }
+    const topRight = { placement: { position: { x: 1, y: -1 } } }
     const left = { placement: { position: { x: -1, y: 0 } } }
     const center = { placement: { position: { x: 0, y: 0 } } }
     const right = { placement: { position: { x: 1, y: 0 } } }
-    const bottomLeft = { placement: { position: { x: -1, y: -1 } } }
-    const bottom = { placement: { position: { x: 0, y: -1 } } }
-    const bottomRight = { placement: { position: { x: 1, y: -1 } } }
+    const bottomLeft = { placement: { position: { x: -1, y: 1 } } }
+    const bottom = { placement: { position: { x: 0, y: 1 } } }
+    const bottomRight = { placement: { position: { x: 1, y: 1 } } }
 
     const emptyMap = [center]
     const completeMap = [topLeft, top, topRight, left, center, right, bottomLeft, bottom, bottomRight]

@@ -18,22 +18,22 @@ export function getPositionsAround(position, { includeCorners = false } = {}) {
 
     if (includeCorners) {
         return [
-            { x: x - 1, y: y + 1 },
-            { x, y: y + 1 },
-            { x: x + 1, y: y + 1 },
-            { x: x - 1, y },
-            { x: x + 1, y },
             { x: x - 1, y: y - 1 },
             { x, y: y - 1 },
             { x: x + 1, y: y - 1 },
+            { x: x - 1, y },
+            { x: x + 1, y },
+            { x: x - 1, y: y + 1 },
+            { x, y: y + 1 },
+            { x: x + 1, y: y + 1 },
         ]
     }
 
     return [
-        { x, y: y + 1 },
+        { x, y: y - 1 },
         { x: x - 1, y },
         { x: x + 1, y },
-        { x, y: y - 1 },
+        { x, y: y + 1 },
     ]
 }
 

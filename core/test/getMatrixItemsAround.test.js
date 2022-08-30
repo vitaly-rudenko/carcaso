@@ -13,13 +13,13 @@ describe('getMatrixItemsAround()', () => {
     ]
 
     expect(getMatrixItemsAround(matrix, { x: 4, y: 2 }, { includeCorners: false }))
-      .to.deep.eq(['f', 'w', 'a'])
+      .to.deep.eq(['a', 'w', 'f'])
 
     expect(getMatrixItemsAround(matrix, { x: 3, y: 1 }, { includeCorners: true }))
       .to.deep.eq([
-        'm', 'w', 'w',
-        'w',      'a',
         'w', 'w', 'a',
+        'w',      'a',
+        'm', 'w', 'w',
       ])
   })
 })

@@ -44,49 +44,49 @@ describe('findPatternPlacements()', () => {
             .to.deep.equalInAnyOrder([
                 { position: { x: -1, y: 0  }, rotation: 0 },
                 { position: { x: -1, y: 0  }, rotation: 2 },
-                { position: { x: 0,  y: -1 }, rotation: 1 },
-                { position: { x: 0,  y: -1 }, rotation: 3 },
+                { position: { x: 0,  y: 1 }, rotation: 1 },
+                { position: { x: 0,  y: 1 }, rotation: 3 },
                 { position: { x: 1,  y: 0  }, rotation: 3 },
-                { position: { x: 0,  y: 1  }, rotation: 2 },
+                { position: { x: 0,  y: -1  }, rotation: 2 },
             ])
     })
 
     it('should return possible placements for tiles on simple map (1)', () => {
         const map = [
             { pattern: 'crrrf', placement: { rotation: 0, position: { x: 0,  y: 0 } } },
-            { pattern: 'crccr', placement: { rotation: 0, position: { x: 1,  y: 1 } } },
+            { pattern: 'crccr', placement: { rotation: 0, position: { x: 1,  y: -1 } } },
             { pattern: 'crccr', placement: { rotation: 1, position: { x: 1,  y: 0 } } },
             { pattern: 'crccr', placement: { rotation: 2, position: { x: -1, y: 0 } } },
-            { pattern: 'crccr', placement: { rotation: 3, position: { x: -1, y: 1 } } },
+            { pattern: 'crccr', placement: { rotation: 3, position: { x: -1, y: -1 } } },
         ]
 
         expect(findPatternPlacements('crrrf', map))
             .to.deep.equalInAnyOrder([
-                { position: { x: -1, y: 2 },  rotation: 2 },
-                { position: { x: 0, y: 1 },   rotation: 2 },
-                { position: { x: 1, y: 2 },   rotation: 2 },
-                { position: { x: 2, y: 1 },   rotation: 3 },
+                { position: { x: -1, y: -2 },  rotation: 2 },
+                { position: { x: 0, y: -1 },   rotation: 2 },
+                { position: { x: 1, y: -2 },   rotation: 2 },
+                { position: { x: 2, y: -1 },   rotation: 3 },
                 { position: { x: 2, y: 0 },   rotation: 3 },
-                { position: { x: 1, y: -1 },  rotation: 0 },
-                { position: { x: 0, y: -1 },  rotation: 2 },
-                { position: { x: -1, y: -1 }, rotation: 0 },
+                { position: { x: 1, y: 1 },  rotation: 0 },
+                { position: { x: 0, y: 1 },  rotation: 2 },
+                { position: { x: -1, y: 1 }, rotation: 0 },
                 { position: { x: -2, y: 0 },  rotation: 1 },
-                { position: { x: -2, y: 1 },  rotation: 1 },
+                { position: { x: -2, y: -1 },  rotation: 1 },
             ])
     })
 
     it('should return possible placements for tiles on simple map (2)', () => {
         const map = [
             { pattern: 'crrrf', placement: { rotation: 0, position: { x: 0,  y: 0 } } },
-            { pattern: 'frrfr', placement: { rotation: 0, position: { x: 1,  y: 1 } } },
+            { pattern: 'frrfr', placement: { rotation: 0, position: { x: 1,  y: -1 } } },
             { pattern: 'frrfr', placement: { rotation: 1, position: { x: 1,  y: 0 } } },
             { pattern: 'frrfr', placement: { rotation: 2, position: { x: -1, y: 0 } } },
-            { pattern: 'frrfr', placement: { rotation: 3, position: { x: -1, y: 1 } } },
+            { pattern: 'frrfr', placement: { rotation: 3, position: { x: -1, y: -1 } } },
         ]
 
         expect(findPatternPlacements('crrrc', map))
             .to.deep.equalInAnyOrder([
-                { position: { x: 0, y: 1 }, rotation: 0 },
+                { position: { x: 0, y: -1 }, rotation: 0 },
             ])
     })
 
@@ -97,7 +97,7 @@ describe('findPatternPlacements()', () => {
 
         expect(findPatternPlacements('wfwfw', map))
             .to.deep.equalInAnyOrder([
-                { position: { x: 0, y: -1 }, rotation: 0 },
+                { position: { x: 0, y: 1 }, rotation: 0 },
             ])
     })
 
@@ -108,18 +108,18 @@ describe('findPatternPlacements()', () => {
 
         expect(findPatternPlacements('cwwwf', map))
             .to.deep.equalInAnyOrder([
-                { position: { x: 0, y: -1 }, rotation: 1 },
-                { position: { x: 0, y: -1 }, rotation: 3 },
+                { position: { x: 0, y: 1 }, rotation: 1 },
+                { position: { x: 0, y: 1 }, rotation: 3 },
             ])
 
         expect(findPatternPlacements('wwwff', map))
             .to.deep.equalInAnyOrder([
-                { position: { x: 0, y: -1 }, rotation: 0 },
+                { position: { x: 0, y: 1 }, rotation: 0 },
             ])
 
         expect(findPatternPlacements('ffwfw', map))
             .to.deep.equalInAnyOrder([
-                { position: { x: 0, y: -1 }, rotation: 2 },
+                { position: { x: 0, y: 1 }, rotation: 2 },
             ])
     })
 
